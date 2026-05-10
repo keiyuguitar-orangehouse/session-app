@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>セッションミュージシャン リファレンス</title>
+<style>*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:system-ui,-apple-system,'Hiragino Sans',sans-serif;background:#FFFFF8;color:#1a1a1a;}
+.wrap{display:flex;min-height:100vh;}
+.sidebar{width:190px;flex-shrink:0;border-right:1px solid #DDD8D0;padding:.75rem 0;background:#F0EDE8;overflow-y:auto;position:sticky;top:0;height:100vh;}
+.top-btn{display:block;width:calc(100% - .5rem);text-align:left;background:none;border:none;padding:.65rem .85rem;font-size:13px;font-weight:700;color:#1a1a1a;cursor:pointer;border-radius:6px;margin:0 .25rem;}
+.top-btn:hover{background:#E8E3DC;}
+.sub-menu{display:none;padding:.1rem 0 .4rem;}.sub-menu.open{display:block;}
+.cat-label{font-size:10px;color:#C97D3A;letter-spacing:.07em;padding:.5rem .85rem .2rem 1.25rem;text-transform:uppercase;font-weight:600;}
+.menu-item{display:block;width:100%;text-align:left;background:none;border:none;padding:.35rem .85rem .35rem 1.5rem;font-size:12px;color:#4A3F35;cursor:pointer;line-height:1.3;}
+.menu-item:hover{background:#E8E3DC;color:#1a1a1a;}
+.menu-item.active{color:#1a1a1a;font-weight:500;border-left:2px solid #1a1a1a;padding-left:calc(1.5rem - 2px);}
+.divider{height:1px;background:#DDD8D0;margin:.3rem .5rem;}
+.main{flex:1;padding:1.25rem 1.5rem;min-width:0;overflow-y:auto;background:#FFFFF8;}
+.screen{display:none;}.screen.active{display:block;}
+.slabel{font-size:10px;color:#8A7F74;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;}
+.key-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:.85rem;}
+.pill{padding:4px 10px;border-radius:20px;border:1.5px solid #DDD8D0;background:#F5F2EB;color:#4A3F35;font-size:11.5px;cursor:pointer;}
+.pill:hover{background:#E8E3DC;}
+.pill.active{background:#1a1a1a!important;color:#fff!important;border-color:#1a1a1a!important;font-weight:500;}
+.tab-row{display:flex;margin-bottom:.85rem;border-bottom:1px solid #DDD8D0;}
+.tab-btn{padding:6px 14px;font-size:12px;background:none;border:none;border-bottom:2px solid transparent;color:#6b7280;cursor:pointer;margin-bottom:-1px;}
+.tab-btn.active{color:#1a1a1a;font-weight:500;border-bottom-color:#1a1a1a;}
+.tab-btn:hover{color:#1a1a1a;}
+.info-bar{font-size:12px;color:#4A3F35;margin-bottom:.75rem;padding:.6rem .85rem;background:#F5F2EB;border-radius:6px;line-height:1.6;border:1px solid #DDD8D0;}
+.info-bar strong{color:#1a1a1a;font-weight:500;}
+.chord-seq{display:flex;gap:6px;align-items:flex-start;flex-wrap:wrap;margin-bottom:.85rem;}
+.chord-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.chord-box{padding:5px 12px;border-radius:6px;border:1px solid #DDD8D0;background:#F5F2EB;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;color:#1a1a1a;}
+.chord-box:hover{background:#FFFFF8;border-color:#1a1a1a;}
+.chord-box.active-chord{border:2px solid #1a1a1a;background:#FFFFF8;}
+.chord-label{font-size:10px;color:#6b7280;text-align:center;line-height:1.45;max-width:88px;}
+.chord-label .role{font-size:9px;opacity:.75;}
+.arr{color:#6b7280;font-size:13px;padding-top:7px;}
+.neck-wrap{overflow-x:auto;}
+.n-card{background:#FFFFF8;border:1px solid #DDD8D0;border-radius:10px;padding:1rem 1.25rem;margin-bottom:.85rem;}
+.n-title{font-size:15px;font-weight:500;color:#1a1a1a;margin-bottom:.25rem;}
+.n-sub{font-size:11px;color:#6b7280;margin-bottom:.75rem;}
+.n-sym{font-size:18px;font-weight:500;color:#1a1a1a;margin-bottom:.75rem;line-height:1.6;}
+.n-desc{font-size:13px;color:#6b7280;line-height:1.65;margin-bottom:.65rem;}
+.n-tip{font-size:12px;color:#1a1a1a;background:#F5F2EB;padding:.5rem .75rem;border-radius:6px;line-height:1.55;border-left:2px solid #C97D3A;}
+.n-tip::before{content:"セッションでは \2192 ";font-weight:500;}
+.tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;margin-bottom:.5rem;background:#F5F2EB;color:#C97D3A;border:1px solid #DDD8D0;font-weight:600;}
+.pattern-block{background:#F5F2EB;border-radius:6px;padding:.75rem 1rem;margin-bottom:.75rem;}
+.pattern-title{font-size:13px;font-weight:500;color:#1a1a1a;margin-bottom:.4rem;}
+.pattern-steps{counter-reset:step;list-style:none;padding:0;}
+.pattern-steps li{font-size:12px;color:#6b7280;padding:.2rem 0 .2rem 1.4rem;position:relative;line-height:1.55;}
+.pattern-steps li::before{content:counter(step);counter-increment:step;position:absolute;left:0;font-weight:500;color:#1a1a1a;font-size:11px;}
+.sym{font-weight:500;color:#1a1a1a;}
+.rule-block{font-size:12px;color:#6b7280;line-height:1.8;}
+.search-btn{padding:7px 20px;border-radius:20px;border:none;background:#1a1a1a;color:#fff;font-size:13px;font-weight:500;cursor:pointer;margin-bottom:1rem;display:block;}
+.search-btn:hover{opacity:.85;}
+.target-info{font-size:13px;color:#4A3F35;margin-bottom:1rem;padding:.6rem .85rem;background:#F5F2EB;border-radius:6px;border:1px solid #DDD8D0;}
+.target-info strong{color:#1a1a1a;}
+.special-section{margin-bottom:.75rem;}
+.special-header{font-size:12px;font-weight:500;padding:.35rem .75rem;border-radius:6px;display:inline-block;margin-bottom:.5rem;}
+.header-perfect{background:#1a1a1a;color:#fff;}
+.header-contain{background:#2A6F97;color:white;}
+.special-card{border-radius:10px;padding:.75rem 1rem;margin-bottom:.5rem;cursor:pointer;}
+.card-perfect{border:2px solid #1a1a1a;background:#FFFFF8;}
+.card-contain{border:2px solid #2A6F97;background:#FFFFF8;}
+.card-perfect:hover,.card-contain:hover,.special-card.active{background:#F5F2EB;}
+.special-chord{font-size:16px;font-weight:500;margin-bottom:.3rem;}
+.special-chord.perfect{color:#1a1a1a;}
+.special-chord.contain{color:#2A6F97;}
+.special-notes{font-size:11px;color:#6b7280;margin-bottom:.3rem;}
+.special-desc{font-size:11px;color:#6b7280;font-style:italic;}
+.sec-title{font-size:12px;font-weight:500;color:#1a1a1a;margin:.75rem 0 .4rem;padding:.3rem .6rem;background:#F5F2EB;border-radius:6px;display:inline-block;}
+.result-grid{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.5rem;}
+.result-card{padding:6px 12px;border-radius:6px;border:1px solid #DDD8D0;background:#FFFFF8;cursor:pointer;min-width:80px;}
+.result-card:hover,.result-card.active{background:#F5F2EB;}
+.result-card.active{border-color:#1a1a1a;border-width:1.5px;}
+.result-card .rname{font-size:13px;font-weight:500;color:#1a1a1a;}
+.result-card .rcommon{font-size:10px;color:#6b7280;margin-top:2px;}
+.result-card .rcommon span{color:#1a1a1a;font-weight:500;}
+.pc{background:#FFFFF8;border:1px solid #DDD8D0;border-radius:10px;padding:.85rem 1rem;margin-bottom:.65rem;}
+.pc-top{display:grid;grid-template-columns:100px 1fr;gap:.75rem;align-items:start;margin-bottom:.75rem;}
+.rb{display:inline-block;font-size:10px;font-weight:500;padding:3px 8px;border-radius:10px;margin-bottom:.3rem;white-space:nowrap;}
+.rb-t{background:#FFF3E0;color:#E65100;border:1px solid #FFB74D;}
+.rb-s{background:#E8F5E9;color:#2E7D32;border:1px solid #81C784;}
+.rb-e{background:#E3F2FD;color:#1565C0;border:1px solid #64B5F6;}
+.pc-method{font-size:13px;font-weight:500;color:#1a1a1a;margin-bottom:.25rem;line-height:1.4;}
+.pc-theory{font-size:11.5px;color:#6b7280;line-height:1.6;margin-bottom:.35rem;}
+.pc-meta{font-size:11.5px;color:#4A3F35;line-height:1.6;padding:.4rem .65rem;background:#F5F2EB;border-radius:6px;border-left:2px solid #C97D3A;}
+.pc-num{font-size:11px;font-weight:500;color:#6b7280;margin-bottom:.2rem;}
+.ex-area{border-top:1px solid #DDD8D0;padding-top:.65rem;}
+.ex-label{font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem;}
+.pr{display:flex;align-items:flex-start;gap:4px;flex-wrap:wrap;margin-bottom:.35rem;}
+.pl{font-size:10px;color:#6b7280;width:32px;flex-shrink:0;padding-top:7px;}
+.cc{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.ch{padding:4px 10px;border-radius:6px;font-size:12px;font-weight:500;background:#F5F2EB;color:#4A3F35;border:1px solid #DDD8D0;white-space:nowrap;}
+.ch.hl{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
+.cl{font-size:9px;color:#6b7280;text-align:center;}
+.cl.hl{color:#1a1a1a;font-weight:500;}
+.as{color:#6b7280;font-size:11px;padding-top:7px;}
+.nt{font-size:11px;color:#6b7280;margin-top:.3rem;line-height:1.5;}
+.nt strong{color:#1a1a1a;}
+.home-btn{position:fixed;right:0;top:50%;transform:translateY(-50%);width:44px;height:80px;border-radius:10px 0 0 10px;background:#1a1a1a;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;z-index:9999;box-shadow:-2px 0 8px rgba(0,0,0,.2);transition:background .15s;}
+.home-btn:hover{background:#C97D3A;}
+.home-btn svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.home-btn span{font-size:9px;color:#fff;font-weight:600;letter-spacing:.05em;}
+.inst-tab-row{display:flex;gap:6px;margin-bottom:.75rem;}
+.inst-tab{padding:5px 14px;border-radius:20px;border:1.5px solid #DDD8D0;background:#F5F2EB;color:#4A3F35;font-size:12px;font-weight:500;cursor:pointer;}
+.inst-tab:hover{background:#E8E3DC;}
+.inst-tab.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
+
+.omit-row{display:flex;gap:6px;margin-bottom:.75rem;flex-wrap:wrap;}
+.omit-btn{padding:4px 12px;border-radius:20px;border:1.5px solid #DDD8D0;background:#F5F2EB;color:#4A3F35;font-size:11px;font-weight:500;cursor:pointer;}
+.omit-btn:hover{background:#E8E3DC;}
+.omit-btn.active{background:#C97D3A;color:#fff;border-color:#C97D3A;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="sidebar">
+  <div class="top-section">
+    <button class="top-btn" id="btn-chord">&#127928; コード進行</button>
+    <div class="sub-menu" id="sub-chord">
+      <div class="cat-label">ジャズ</div>
+      <button class="menu-item" data-screen="chord" data-pattern="251">2-5-1</button>
+      <button class="menu-item" data-screen="chord" data-pattern="1625">1-6-2-5</button>
+      <button class="menu-item" data-screen="chord" data-pattern="back-cycle">バックサイクル</button>
+      <button class="menu-item" data-screen="chord" data-pattern="tritone-sub">トリトネットサブ</button>
+      <div class="cat-label">ブルース</div>
+      <button class="menu-item" data-screen="chord" data-pattern="blues-12">12小節ブルース</button>
+      <button class="menu-item" data-screen="chord" data-pattern="blues-minor">マイナーブルース</button>
+      <button class="menu-item" data-screen="chord" data-pattern="blues-quick">クイックチェンジ</button>
+      <button class="menu-item" data-screen="chord" data-pattern="blues-ending">定番エンディング</button>
+      <button class="menu-item" data-screen="chord" data-pattern="turnaround">ターンアラウンド</button>
+      <div class="cat-label">クリシェ</div>
+      <button class="menu-item" data-screen="chord" data-pattern="major-cliche">メジャークリシェ</button>
+      <button class="menu-item" data-screen="chord" data-pattern="minor-cliche">マイナークリシェ</button>
+      <div class="cat-label">借用・モーダル</div>
+      <button class="menu-item" data-screen="chord" data-pattern="modal-interchange">モーダルインターチェンジ</button>
+      <button class="menu-item" data-screen="chord" data-pattern="minor-iv">マイナーIV借用</button>
+      <div class="cat-label">定番進行</div>
+      <button class="menu-item" data-screen="chord" data-pattern="1564">1-5-6-4</button>
+      <button class="menu-item" data-screen="chord" data-pattern="axis">カノン進行</button>
+      <button class="menu-item" data-screen="chord" data-pattern="odo">王道進行</button>
+      <div class="cat-label">その他</div>
+      <button class="menu-item" data-screen="chord" data-pattern="just-two">Just the Two of Us進行</button>
+      <button class="menu-item" data-screen="chord" data-pattern="lovin-you">Lovin' You進行</button>
+      <button class="menu-item" data-screen="chord" data-pattern="komuro">小室進行</button>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="top-section">
+    <button class="top-btn" id="btn-notation">&#128196; 譜面の進み方</button>
+    <div class="sub-menu" id="sub-notation">
+      <div class="cat-label">繰り返し</div>
+      <button class="menu-item" data-screen="notation" data-notation="repeat">リピート記号</button>
+      <button class="menu-item" data-screen="notation" data-notation="volta">1番・2番括弧</button>
+      <button class="menu-item" data-screen="notation" data-notation="dc">ダ・カーポ (D.C.)</button>
+      <button class="menu-item" data-screen="notation" data-notation="flow">譜面の進み方パターン</button>
+      <div class="cat-label">ジャンプ</div>
+      <button class="menu-item" data-screen="notation" data-notation="ds">ダル・セーニョ (D.S.)</button>
+      <button class="menu-item" data-screen="notation" data-notation="coda">コーダ</button>
+      <button class="menu-item" data-screen="notation" data-notation="segno">セーニョ</button>
+      <div class="cat-label">強弱・速度</div>
+      <button class="menu-item" data-screen="notation" data-notation="dynamics">強弱記号</button>
+      <button class="menu-item" data-screen="notation" data-notation="tempo">速度記号</button>
+      <div class="cat-label">構成</div>
+      <button class="menu-item" data-screen="notation" data-notation="fine">フィーネ</button>
+      <button class="menu-item" data-screen="notation" data-notation="tacet">タセット</button>
+      <button class="menu-item" data-screen="notation" data-notation="slash">スラッシュ譜</button>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="top-section">
+    <button class="top-btn" id="btn-scale">&#127926; スケール</button>
+    <div class="sub-menu" id="sub-scale">
+      <div class="cat-label">メジャー系</div>
+      <button class="menu-item" data-screen="scale" data-scale="major">メジャー（アイオニアン）</button>
+      <button class="menu-item" data-screen="scale" data-scale="mixolydian">ミクソリディアン</button>
+      <button class="menu-item" data-screen="scale" data-scale="lydian">リディアン</button>
+      <button class="menu-item" data-screen="scale" data-scale="lydian-dom">リディアン♭7</button>
+      <div class="cat-label">マイナー系</div>
+      <button class="menu-item" data-screen="scale" data-scale="natural-minor">ナチュラルマイナー</button>
+      <button class="menu-item" data-screen="scale" data-scale="dorian">ドリアン</button>
+      <button class="menu-item" data-screen="scale" data-scale="phrygian">フリジアン</button>
+      <button class="menu-item" data-screen="scale" data-scale="harmonic-minor">ハーモニックマイナー</button>
+      <button class="menu-item" data-screen="scale" data-scale="melodic-minor">メロディックマイナー</button>
+      <div class="cat-label">ブルース・ペンタ系</div>
+      <button class="menu-item" data-screen="scale" data-scale="major-penta">メジャーペンタトニック</button>
+      <button class="menu-item" data-screen="scale" data-scale="minor-penta">マイナーペンタトニック</button>
+      <button class="menu-item" data-screen="scale" data-scale="blues">ブルーススケール</button>
+      <div class="cat-label">その他</div>
+      <button class="menu-item" data-screen="scale" data-scale="diminished-hw">ディミニッシュ（HW）</button>
+      <button class="menu-item" data-screen="scale" data-scale="altered">オルタード</button>
+      <button class="menu-item" data-screen="scale" data-scale="whole-tone">ホールトーン</button>
+      <button class="menu-item" data-screen="scale" data-scale="chromatic">クロマチック</button>
+      <div class="cat-label">世界・民族スケール</div>
+      <button class="menu-item" data-screen="scale" data-scale="enka">演歌スケール（陽音階）</button>
+      <button class="menu-item" data-screen="scale" data-scale="okinawa">沖縄スケール（琉球音階）</button>
+      <button class="menu-item" data-screen="scale" data-scale="india">インドスケール（バイラヴィ）</button>
+      <button class="menu-item" data-screen="scale" data-scale="egypt">エジプトスケール</button>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="top-section">
+    <button class="top-btn" id="btn-proxy">&#128260; 代理コードの考え方</button>
+    <div class="sub-menu" id="sub-proxy">
+      <button class="menu-item" data-screen="proxy-search">共通音コード検索</button>
+      <button class="menu-item" data-screen="proxy-guide">代理コード手法一覧</button>
+    </div>
+  </div>
+</div>
+<div class="main">
+  <div class="screen active" id="screen-welcome">
+    <div style="padding:2rem 0;font-size:13px;line-height:1.8;color:#6b7280;">
+      <div style="font-size:18px;font-weight:600;color:#1a1a1a;margin-bottom:.75rem;">セッションミュージシャン リファレンス</div>
+      左のメニューから項目を選んでください。<br>
+      コード進行・譜面の進み方・スケール・代理コードの考え方を収録しています。
+      <div style="margin-top:1rem;">
+        <button id="btn-about" style="padding:8px 18px;border-radius:20px;border:1.5px solid #C97D3A;background:none;color:#C97D3A;font-size:12px;font-weight:600;cursor:pointer;">&#128214; アプリの説明を見る</button>
+      </div>
+    </div>
+  </div>
+  <div class="screen" id="screen-about">
+  <div style="max-width:640px;">
+    <div style="font-size:16px;font-weight:600;color:#1a1a1a;margin-bottom:.5rem;">セッションミュージシャン リファレンス　使い方ガイド</div>
+    <div style="font-size:12px;color:#6b7280;line-height:1.8;margin-bottom:1.25rem;">このアプリはセッションやバンド演奏の現場で「あのコード進行なんだっけ？」「この記号どういう意味？」をすぐに解決するためのリファレンスです。</div>
+
+    <div style="font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:.75rem;">4つのメイン機能</div>
+
+    <div style="background:#F5F2EB;border-radius:8px;padding:.85rem 1rem;margin-bottom:.65rem;border-left:3px solid #C97D3A;">
+      <div style="font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:.35rem;">🎸 コード進行</div>
+      <div style="font-size:12px;color:#4A3F35;line-height:1.7;">ジャズ・ブルース・クリシェ・定番進行など20パターン以上を収録。キーを選ぶと全コードがその場でトランスポーズされ、ギターネック上の押さえ方も表示されます。セッション前の予習や、「ブルースで」「カノンで」と言われた瞬間の確認に使えます。指板表示は🎸ギター・🎸ベース・🎹鍵盤の3つのボタンで切り替えることができます。ギターモードはコードフォームを指板上に表示、ベースモードは4弦ベースの指板上に構成音をR・3・5・7などのラベル付きで表示、鍵盤モードは1オクターブの鍵盤上に構成音をハイライト表示します。楽器に合わせてお使いください。</div>
+    </div>
+
+    <div style="background:#F5F2EB;border-radius:8px;padding:.85rem 1rem;margin-bottom:.65rem;border-left:3px solid #C97D3A;">
+      <div style="font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:.35rem;">📄 譜面の進み方</div>
+      <div style="font-size:12px;color:#4A3F35;line-height:1.7;">D.C.・D.S.・コーダ・セーニョなど譜面記号の読み方をステップ形式で解説。セッションで初見の譜面を渡されたときに迷わないための辞典です。</div>
+    </div>
+
+    <div style="background:#F5F2EB;border-radius:8px;padding:.85rem 1rem;margin-bottom:.65rem;border-left:3px solid #C97D3A;">
+      <div style="font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:.35rem;">&#127926; スケール</div>
+      <div style="font-size:12px;color:#4A3F35;line-height:1.7;">メジャー・マイナー・ペンタトニック・ブルースから、演歌・沖縄・インド・エジプトなど世界の民族スケールまで全20種類を収録。全キーに対応し、ギター・ベース・鍵盤の3つのビューで構成音の位置を確認できます。</div>
+    </div>
+
+    <div style="background:#F5F2EB;border-radius:8px;padding:.85rem 1rem;margin-bottom:1.25rem;border-left:3px solid #C97D3A;">
+      <div style="font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:.35rem;">🔄 代理コードの考え方（このアプリの核心）</div>
+      <div style="font-size:12px;color:#4A3F35;line-height:1.7;">コードを選んで検索すると、構成音が共通するコードを幅広く探し出します。</div>
+    </div>
+
+    <div style="font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:.75rem;">共通音コード検索でできること</div>
+    <div style="font-size:12px;color:#6b7280;line-height:1.8;margin-bottom:.75rem;">コード理論の本には「Em7はCM7の代理になれる」と書いてあります。でも実際のセッションでは「じゃあCM9に対して何が使える？」「このコードを別の響きにしたい」という実践的な疑問のほうが多い。この検索機能はその答えを一瞬で出します。</div>
+
+    <div style="font-size:12px;font-weight:600;color:#1a1a1a;margin-bottom:.5rem;">結果は5段階で表示されます</div>
+    <div style="background:#F5F2EB;border-radius:8px;padding:.85rem 1rem;margin-bottom:1.25rem;">
+      <div style="font-size:12px;color:#4A3F35;line-height:2;">
+        <div>⚡ <strong style="color:#1a1a1a;">完全一致</strong>：ルートが違うだけで構成音が同じ。転回の関係にあり、代理コードとして最も強力。</div>
+        <div>🌟 <strong style="color:#1a1a1a;">完全包含</strong>：一方の全音が他方に含まれる。テンションを追加した代理として有効。</div>
+        <div>🔴 <strong style="color:#1a1a1a;">4音共通</strong> / 🟠 <strong style="color:#1a1a1a;">3音共通</strong>：共通音が多いほど声部の動きが少なく、自然なコードチェンジになります。</div>
+      </div>
+    </div>
+
+    <div style="background:#1a1a1a;border-radius:8px;padding:1rem 1.25rem;margin-bottom:1rem;">
+      <div style="font-size:12px;color:#F0EDE8;line-height:1.9;">
+        代理コードやアプリ内のコード進行を取り入れたからといって、必ずかっこよくなるとは限りません。「かっこいい」の基準は人それぞれ異なりますし、理論はあくまで道具のひとつにすぎません。このアプリを出発点に、実際に音を鳴らしながらいろいろと試していただき、ご自身の耳と感覚で吸収していただければ幸いです。
+      </div>
+    </div></div></div>
+  <div class="screen" id="screen-chord">
+    <div class="slabel">キー</div>
+    <div class="key-row" id="key-row"></div>
+    <div id="tab-area"></div>
+    <div class="slabel">コード進行</div>
+    <div class="chord-seq" id="chord-seq"></div>
+    <div class="info-bar" id="info-bar"></div>
+    <div class="inst-tab-row">
+      <button class="inst-tab active" id="tab-guitar" onclick="setInst('guitar')">🎸 ギター</button>
+      <button class="inst-tab" id="tab-bass" onclick="setInst('bass')">🎸 ベース</button>
+      <button class="inst-tab" id="tab-keys" onclick="setInst('keys')">🎹 鍵盤</button>
+    </div>
+    <div class="omit-row" id="omit-row">
+      <span style="font-size:11px;color:#8A7F74;padding-top:4px;">省略：</span>
+      <button class="omit-btn" id="omit-5" onclick="toggleOmit('5')">5度</button>
+      <button class="omit-btn" id="omit-R" onclick="toggleOmit('R')">ルート</button>
+      <button class="omit-btn" id="omit-3" onclick="toggleOmit('3')">3度</button>
+    </div>
+    <div class="neck-wrap" id="neck-wrap"></div>
+  </div>
+  <div class="screen" id="screen-notation">
+    <div id="notation-content"></div>
+  </div>
+  <div class="screen" id="screen-proxy-search">
+    <div style="font-size:15px;font-weight:500;color:#1a1a1a;margin-bottom:.25rem;">共通音コード検索</div>
+    <div style="font-size:12px;color:#6b7280;margin-bottom:1rem;">コードを選んで検索。代理コードの発見に活用してください。</div>
+    <div class="slabel">ルート音</div>
+    <div class="key-row" id="proxy-root-row"></div>
+    <div class="slabel">コードタイプ</div>
+    <div id="proxy-type-row"></div>
+    <button class="search-btn" id="search-btn">共通音コードを検索</button>
+    <div id="proxy-target-info"></div>
+    <div id="proxy-results"></div>
+    <div id="proxy-neck-label" style="display:none;">
+      <div class="inst-tab-row" style="margin-top:.5rem;">
+        <button class="inst-tab active" id="proxy-tab-guitar" onclick="setProxyInst('guitar')">🎸 ギター</button>
+        <button class="inst-tab" id="proxy-tab-bass" onclick="setProxyInst('bass')">🎸 ベース</button>
+        <button class="inst-tab" id="proxy-tab-keys" onclick="setProxyInst('keys')">🎹 鍵盤</button>
+      </div>
+      <div class="omit-row">
+        <span style="font-size:11px;color:#8A7F74;padding-top:4px;">省略：</span>
+        <button class="omit-btn" id="proxy-omit-5" onclick="toggleProxyOmit('5')">5度</button>
+        <button class="omit-btn" id="proxy-omit-R" onclick="toggleProxyOmit('R')">ルート</button>
+        <button class="omit-btn" id="proxy-omit-3" onclick="toggleProxyOmit('3')">3度</button>
+      </div>
+    </div>
+    <div class="neck-wrap" id="proxy-neck-wrap"></div>
+  </div>
+  <div class="screen" id="screen-scale">
+    <div class="slabel">キー</div>
+    <div class="key-row" id="scale-key-row"></div>
+    <div id="scale-title-area"></div>
+    <div class="inst-tab-row">
+      <button class="inst-tab active" id="scale-tab-guitar" onclick="setScaleInst('guitar')">&#127928; ギター</button>
+      <button class="inst-tab" id="scale-tab-bass" onclick="setScaleInst('bass')">&#127928; ベース</button>
+      <button class="inst-tab" id="scale-tab-keys" onclick="setScaleInst('keys')">&#127929; 鍵盤</button>
+    </div>
+    <div class="neck-wrap" id="scale-neck-wrap"></div>
+  </div>
+  <div class="screen" id="screen-proxy-guide">
+    <div style="font-size:15px;font-weight:500;color:#1a1a1a;margin-bottom:.25rem;">代理コード</div>
+    <div style="font-size:12px;color:#6b7280;margin-bottom:1.25rem;">元のコードを別のコードに置き換えるアレンジ手法（Cキー例付き）</div>
+    <div id="proxy-guide-content"></div>
+  </div>
+</div>
+</div>
+<button class="home-btn" id="home-btn" title="トップに戻る">
+  <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>
+  <span>TOP</span>
+</button>
+<script>
+var SVG_SEGNO='<svg xmlns="http://www.w3.org/2000/svg" width="24" height="28" viewBox="0 0 28 32" style="vertical-align:middle;display:inline-block;"><line x1="4" y1="28" x2="24" y2="4" stroke="#1a1a1a" stroke-width="2.2" stroke-linecap="round"/><path d="M20,8 C20,5 17,3 14,4 C11,5 9,8 12,10 C15,12 18,13 17,16 C16,19 12,20 10,18" fill="none" stroke="#1a1a1a" stroke-width="2.2" stroke-linecap="round"/><circle cx="6" cy="20" r="2.2" fill="#1a1a1a"/><circle cx="22" cy="12" r="2.2" fill="#1a1a1a"/></svg>';
+var SVG_CODA='<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 28 28" style="vertical-align:middle;display:inline-block;"><circle cx="14" cy="14" r="8" fill="none" stroke="#1a1a1a" stroke-width="2.2"/><line x1="14" y1="2" x2="14" y2="26" stroke="#1a1a1a" stroke-width="2.2" stroke-linecap="round"/><line x1="2" y1="14" x2="26" y2="14" stroke="#1a1a1a" stroke-width="2.2" stroke-linecap="round"/></svg>';
+var SVG_REP_START='<svg xmlns="http://www.w3.org/2000/svg" width="12" height="20" viewBox="0 0 14 22" style="vertical-align:middle;display:inline-block;"><line x1="2" y1="1" x2="2" y2="21" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/><line x1="6" y1="1" x2="6" y2="21" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round"/><circle cx="10" cy="8" r="2" fill="#1a1a1a"/><circle cx="10" cy="14" r="2" fill="#1a1a1a"/></svg>';
+var SVG_REP_END='<svg xmlns="http://www.w3.org/2000/svg" width="12" height="20" viewBox="0 0 14 22" style="vertical-align:middle;display:inline-block;"><circle cx="4" cy="8" r="2" fill="#1a1a1a"/><circle cx="4" cy="14" r="2" fill="#1a1a1a"/><line x1="8" y1="1" x2="8" y2="21" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round"/><line x1="12" y1="1" x2="12" y2="21" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/></svg>';
+const NOTE_TO_IDX={C:0,'C#':1,Db:1,D:2,'D#':3,Eb:3,E:4,F:5,'F#':6,Gb:6,G:7,'G#':8,Ab:8,A:9,'A#':10,Bb:10,B:11};
+const SHARP_NAMES=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const FLAT_NAMES=['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+const FLAT_KEYS=['F','Bb','Eb','Ab','Db','Gb'];
+function getNote(sem,key){var idx=(NOTE_TO_IDX[key]+sem+120)%12;if(FLAT_KEYS.indexOf(key)>=0)return FLAT_NAMES[idx];return SHARP_NAMES[idx];}
+function noteNumToName(n){return['C','C#','D','Eb','E','F','F#','G','Ab','A','Bb','B'][n];}
+const DEGREE_LABELS={'251':[['Ⅱm7「ツー」','出発点・緊張の始まり'],['V7「ファイブ」','最大の緊張・解決へ向かう力'],['ⅠM7「ワン」','着地点・一番落ち着く場所']],'1625':[['ⅠM7「ワン」','主役・一番落ち着く場所'],['Ⅵm7「シックス」','少し影のある経過点'],['Ⅱm7「ツー」','緊張感の始まり'],['V7「ファイブ」','解決へ向かう強い力']],'back-cycle':[['Ⅱ7「ツー」','逆循の出発点'],['V7「ファイブ」','5度下へ向かう'],['Ⅳ7「フォー」','さらに5度下へ'],['♭Ⅶ7','借用音・暗い色'],['ⅠM7「ワン」','着地点・解決']],'tritone-sub':[['Ⅱm7「ツー」','出発点・緊張の始まり'],['♭Ⅱ7「フラットツー」','裏コード・V7の代理'],['ⅠM7「ワン」','着地点・半音で滑らかに着地']],'blues-12':[['Ⅰ7','主役・ブルースの家'],['Ⅰ7','主役・ブルースの家'],['Ⅰ7','主役・ブルースの家'],['Ⅰ7','主役・ブルースの家'],['Ⅳ7','変化点・少し遠くへ'],['Ⅳ7','変化点・少し遠くへ'],['Ⅰ7','主役に戻る'],['Ⅰ7','主役に戻る'],['V7','緊張の頂点'],['Ⅳ7','少し緩む'],['Ⅰ7','家に帰る'],['Ⅰ7','ターンアラウンドへ']],'blues-minor':[['Ⅰm7','主役・暗いブルースの家'],['Ⅰm7','主役・暗いブルースの家'],['Ⅰm7','主役・暗いブルースの家'],['Ⅰm7','主役・暗いブルースの家'],['Ⅳm7','変化点・さらに暗い色'],['Ⅳm7','変化点・さらに暗い色'],['Ⅰm7','主役に戻る'],['Ⅰm7','主役に戻る'],['V7','緊張の頂点'],['Ⅳm7','少し緩む'],['Ⅰm7','家に帰る'],['V7','次へつなぐ力']],'blues-quick':[['Ⅰ7','主役・ブルースの家'],['Ⅳ7','早くも変化点'],['Ⅰ7','すぐ主役に戻る'],['Ⅰ7','主役・ブルースの家'],['Ⅳ7','変化点・少し遠くへ'],['Ⅳ7','変化点・少し遠くへ'],['Ⅰ7','主役に戻る'],['Ⅰ7','主役に戻る'],['V7','緊張の頂点'],['Ⅳ7','少し緩む'],['Ⅰ7','家に帰る'],['Ⅰ7','ターンアラウンドへ']],'turnaround':[['Ⅰ7「ワン」','折り返しの出発点'],['Ⅵ7「シックス」','次へ引っ張るセカンダリードミナント'],['Ⅱ7「ツー」','さらに引っ張る'],['V7「ファイブ」','冒頭へ戻る力・最大の緊張'],['Ⅰ7「ワン」','着地・完結']],'major-cliche':[['ⅠM7','出発点・明るく落ち着いた場所'],['Ⅰ7','内声が半音下がる第一歩'],['Ⅰ6','さらに半音下がる'],['Ⅰ','最後の着地']],'minor-cliche':[['Ⅰm','主役・暗い出発点'],['ⅠmM7','内声が半音下がる第一歩'],['Ⅰm7','さらに半音下がる'],['Ⅰm6','最後の着地・哀愁の終点']],'modal-interchange':[['Ⅳ「フォー」','出発点・明るい変化点'],['♭Ⅶ「フラットセブン」','短調から借用・突然暗くなる'],['Ⅰ「ワン」','着地点・明るさに戻る']],'minor-iv':[['ⅠM7「ワン」','明るい主役'],['Ⅳm7「フォーマイナー」','短調から借用・切なさを加える'],['ⅠM7「ワン」','明るさに戻る']],'1564':[['Ⅰ','主役・明るい出発点'],['V','緊張感・前へ進む力'],['Ⅵm','少し影のある感情'],['Ⅳ','落ち着いた変化点']],'axis':[['Ⅰ','主役・明るい出発点'],['V','緊張感'],['Ⅵm','少し影のある感情'],['Ⅲm','橋渡し・やわらかい緊張'],['Ⅳ','変化点・落ち着き'],['Ⅰ','主役に戻る'],['Ⅳ','変化点'],['V','冒頭へ戻る力']],'rhythm-changes':[['Ⅰ6「ワン」','主役・ジャズの出発点'],['Ⅵ7「シックス」','次へ引っ張るセカンダリードミナント'],['Ⅱ7「ツー」','さらに引っ張る'],['V7「ファイブ」','解決へ向かう強い力']],'just-two':[['Ⅳ△7「フォー」','出発点・明るい変化点'],['Ⅲ7「スリー」','次へ引っ張るセカンダリードミナント'],['Ⅵm7「シックス」','少し暗い経過点'],['Ⅱm7「ツー」','さらに引っ張る'],['Ⅴ7「ファイブ」','解決へ向かう強い力']],'lovin-you':[['Ⅳ△7「フォー」','出発点・穏やかな展開点'],['Ⅲm7「スリー」','橋渡し・やわらかい緊張'],['Ⅱm7「ツー」','静かに主役へ向かう'],['Ⅰ△7「ワン」','着地点・温かい解決']],'komuro':[['Ⅵm「シックスマイナー」','暗い出発点・感情的な始まり'],['Ⅳ「フォー」','展開点・少し明るくなる'],['Ⅴ「ファイブ」','緊張・高まり'],['Ⅰ「ワン」','明るい着地点']],'odo':[['Ⅳ△7「フォー」','出発点・穏やかな展開点'],['Ⅴ7「ファイブ」','緊張・前へ進む力'],['Ⅲm7「スリー」','橋渡し・切なさのある経過'],['Ⅵm「シックスマイナー」','着地・少し翳りのある終着点']]};
+const PATTERN_WHAT={'251':'ジャズの基本進行。「2→5→1」と5度ずつ下がりながら解決する。ジャズのほぼすべての曲に登場する。','1625':'1→6→2→5と一周するループ進行。ポップスからジャズスタンダードまで幅広く使われる万能進行。','back-cycle':'コードが5度ずつ逆方向に連鎖しながら解決へ向かう。「逆循環」とも呼ぶ。','tritone-sub':'V7の代わりに半音上のコード（裏コード）で代理する技法。「裏コードで」と言われたらこれ。','blues-12':'ブルースの基本形。12小節で一区切りの繰り返し。全コードが7thなのがポイント。','blues-minor':'マイナーキーのブルース。暗く重い雰囲気が特徴。','blues-quick':'12小節ブルースの変形版。2小節目に早くもⅣへ行くのが特徴。現場では「1411」と呼ばれることが多い。','blues-ending':'ブルースを締めるときの定番進行。','turnaround':'コーラスの最後で使う「折り返し進行」。「もう一回」の前にほぼ必ず出てくる。','major-cliche':'同じコードのルートを保ちながら内声だけが半音ずつ下がる進行。','minor-cliche':'マイナーキーで内声が半音ずつ下がるクリシェ。映画音楽やバラードで頻繁に登場。','modal-interchange':'メジャーキーの曲に平行短調のコードを「借りてくる」技法。','minor-iv':'メジャーキーにⅣmを混ぜる技法。切なさや哀愁を加えたいときに効果的。','1564':'現代ポップスで最もよく使われる進行。世界中の名曲に使われている。','axis':'J-Popで定番の軸進行。カノン進行から派生。','rhythm-changes':'ガーシュウィンの「I Got Rhythm」のコード進行。ジャズスタンダードで非常に多く使われる。','just-two':'「Just the Two of Us」コード進行。Ⅳ→Ⅲ→Ⅵm→Ⅱm→Ⅴと動くループ。J-Popやネオソウルで多用される洒落た進行。「丸サ進行」とも呼ばれる。','lovin-you':'Lovin\' You（ミニー・リパートン）の進行。Ⅳ→Ⅲm→Ⅱm→Ⅰと半音ずつ下降するような穏やかな流れ。大人のバラードに最適。','komuro':'Ⅵm→Ⅳ→Ⅴ→Ⅰの進行。小室哲哉が多用したことで「小室進行」と呼ばれる。感情的な盛り上がりを作るのが得意。','odo':'Ⅳ→Ⅴ→Ⅲm→Ⅵmの進行。J-Popで定番の「王道進行」。切なさと高揚感を同時に出せる万能な進行。'};
+const PATTERNS={'251':{label:'2-5-1',desc:'Ⅱm7→V7→ⅠM7',session:'"ツーファイブワンで"',degrees:[2,7,0],qualities:['m7','7','M7']},'1625':{label:'1-6-2-5',desc:'ⅠM7→Ⅵm7→Ⅱm7→V7',session:'"いつものやつで"',degrees:[0,9,2,7],qualities:['M7','m7','m7','7']},'back-cycle':{label:'バックサイクル',desc:'Ⅱ7→V7→Ⅳ7→♭Ⅶ7→Ⅰ',session:'"逆循で"',degrees:[2,7,5,10,0],qualities:['7','7','7','7','M7']},'tritone-sub':{label:'トリトネットサブ',desc:'Ⅱm7→♭Ⅱ7→ⅠM7',session:'"トリサブで"',degrees:[2,1,0],qualities:['m7','7','M7']},'blues-12':{label:'12小節ブルース',desc:'Ⅰ7→Ⅳ7→V7',session:'"ブルースで"',degrees:[0,0,0,0,5,5,0,0,7,5,0,0],qualities:['7','7','7','7','7','7','7','7','7','7','7','7']},'blues-minor':{label:'マイナーブルース',desc:'Ⅰm7→Ⅳm7→V7',session:'"マイナーブルースで"',degrees:[0,0,0,0,5,5,0,0,7,5,0,7],qualities:['m7','m7','m7','m7','m7','m7','m7','m7','7','m7','m7','7']},'blues-quick':{label:'クイックチェンジ',desc:'2小節目に早くもⅣへ',session:'"クイックチェンジで"',degrees:[0,5,0,0,5,5,0,0,7,5,0,0],qualities:['7','7','7','7','7','7','7','7','7','7','7','7']},'blues-ending':{label:'定番ブルースエンディング',desc:'',session:'"エンディングで"',degrees:[],qualities:[],isEnding:true},'turnaround':{label:'ターンアラウンド',desc:'Ⅰ7→Ⅵ7→Ⅱ7→V7→Ⅰ7',session:'"ターンアラウンドで"',degrees:[0,9,2,7,0],qualities:['7','7','7','7','7']},'major-cliche':{label:'メジャークリシェ',desc:'ⅠM7→I7→I6→I',session:'"クリシェで（メジャー）"',degrees:[0,0,0,0],qualities:['M7','7','6','']},'minor-cliche':{label:'マイナークリシェ',desc:'Ⅰm→ⅠmM7→Ⅰm7→Ⅰm6',session:'"クリシェで（マイナー）"',degrees:[0,0,0,0],qualities:['m','mM7','m7','m6']},'modal-interchange':{label:'モーダルインターチェンジ',desc:'Ⅳ→♭Ⅶ→Ⅰ',session:'"借用で"',degrees:[5,10,0],qualities:['M7','7','M7']},'minor-iv':{label:'マイナーⅣ借用',desc:'ⅠM7→Ⅳm7→ⅠM7',session:'"マイナーフォーで"',degrees:[0,5,0],qualities:['M7','m7','M7']},'1564':{label:'1-5-6-4',desc:'Ⅰ→V→Ⅵm→Ⅳ',session:'"いつものコード進行で"',degrees:[0,7,9,5],qualities:['','','m','']},'axis':{label:'カノン進行',desc:'Ⅰ→V→Ⅵm→Ⅲm→Ⅳ→Ⅰ→Ⅳ→V',session:'"カノンで"',degrees:[0,7,9,4,5,0,5,7],qualities:['','','m','m','','','','']},'rhythm-changes':{label:'リズムチェンジ（Aセク）',desc:'Ⅰ6→Ⅵ7→Ⅱ7→V7',session:'"リズムチェンジで"',degrees:[0,9,2,7],qualities:['6','7','7','7']},'just-two':{label:'Just the Two of Us進行',desc:'Ⅳ△7→Ⅲ7→Ⅵm7→Ⅱm7→Ⅴ7',session:'"丸サ進行で" "Just Twoで"',degrees:[5,4,9,2,7],qualities:['M7','7','m7','m7','7']},'lovin-you':{label:"Lovin' You進行",desc:'Ⅳ△7→Ⅲm7→Ⅱm7→Ⅰ△7',session:'"ラビングユー進行で"',degrees:[5,4,2,0],qualities:['M7','m7','m7','M7']},'komuro':{label:'小室進行',desc:'Ⅵm→Ⅳ→Ⅴ→Ⅰ',session:'"小室進行で"',degrees:[9,5,7,0],qualities:['m','','','']},'odo':{label:'王道進行',desc:'Ⅳ△7→Ⅴ7→Ⅲm7→Ⅵm',session:'"王道進行で"',degrees:[5,7,4,9],qualities:['M7','7','m7','m']}};
+const BLUES_ENDING_VAR1={desc:'Ⅰ7→Ⅵ7→Ⅱ7→V7→Ⅰ7',what:'コーラスの最後で使う定番の折り返し。「ワンモア」の前にほぼ必ず出てくる。',session:'"ターンアラウンドで" "ワンモアで"',chords(key){return[{name:getNote(0,key)+'7',bass:null,label:'Ⅰ7「ワン」',role:'折り返しの出発点'},{name:getNote(9,key)+'7',bass:null,label:'Ⅵ7「シックス」',role:'次へ引っ張る'},{name:getNote(2,key)+'7',bass:null,label:'Ⅱ7「ツー」',role:'さらに引っ張る'},{name:getNote(7,key)+'7',bass:null,label:'V7「ファイブ」',role:'最大の緊張'},{name:getNote(0,key)+'7',bass:null,label:'Ⅰ7「ワン」',role:'着地・完結'}];}};
+const BLUES_ENDING_VAR2={desc:'Ⅰ→Ⅰ/♭Ⅶ→Ⅳ→#Ⅳdim→V→♭Ⅱ7→Ⅰ',what:'ベースが半音ずつ動くクロマチックな定番エンディング。',session:'"クロマチックで"',chords(key){const I=getNote(0,key),bVII=getNote(10,key),IV=getNote(5,key);const ivIdx=(NOTE_TO_IDX[IV==='Bb'?'A#':IV==='Eb'?'D#':IV==='Ab'?'G#':IV==='Db'?'C#':IV==='Gb'?'F#':IV]+1)%12;const V=getNote(7,key),bII=getNote(1,key);return[{name:I,bass:null,label:'Ⅰ「ワン」',role:'締めの出発点'},{name:I,bass:bVII,label:'Ⅰ/♭Ⅶ',role:'ベースが半音下降'},{name:IV,bass:null,label:'Ⅳ「フォー」',role:'変化点'},{name:SHARP_NAMES[ivIdx]+'dim',bass:null,label:'#Ⅳdim',role:'経過コード'},{name:V,bass:null,label:'V「ファイブ」',role:'緊張の頂点'},{name:bII+'7',bass:null,label:'♭Ⅱ7',role:'半音上から解決へ'},{name:I,bass:null,label:'Ⅰ「ワン」',role:'着地・終わり'}];}};
+const SHAPES={'CM7':[[null,3,2,0,0,0]],'C7':[[null,3,2,3,1,0]],'Cm7':[[null,3,5,3,4,3]],'C':[[null,3,2,0,1,0]],'Cm':[[null,3,5,5,4,3]],'CmM7':[[null,3,5,4,4,3]],'Cm6':[[null,3,null,2,4,3]],'C6':[[null,3,2,2,1,0]],'Cdim':[[null,null,1,2,1,2]],'CM9':[[null,3,0,0,0,0]],'Cm9':[[null,3,1,3,3,null],[8,10,8,8,8,10]],'C9':[[null,3,2,3,3,3]],'C#7':[[null,4,3,4,2,null]],'C#m7':[[null,4,6,4,5,4]],'C#':[[null,4,3,1,2,1]],'C#m':[[null,4,6,6,5,4]],'C#dim':[[null,null,2,3,2,3]],'C#M7':[[null,4,3,1,1,1]],'Db':[[null,4,3,1,2,1]],'DbM7':[[null,4,3,1,1,1]],'Db7':[[null,4,3,4,2,null]],'Dbm7':[[null,4,6,4,5,4]],'Dbm':[[null,4,6,6,5,4]],'Dbdim':[[null,null,2,3,2,3]],'DbmM7':[[null,4,3,2,2,null]],'Db6':[[null,4,3,3,3,null]],'Dbm6':[[null,4,null,3,5,4]],'DbM9':[[null,4,3,5,4,null]],'Db9':[[null,4,3,4,4,null]],'Dbm9':[[null,4,2,4,4,null]],'Dbaug':[[null,4,3,2,2,null]],'Dbsus4':[[null,4,4,1,2,1]],'DM7':[[null,null,0,2,2,2]],'D7':[[null,null,0,2,1,2]],'Dm7':[[null,null,0,2,1,1]],'D':[[null,null,0,2,3,2]],'Dm':[[null,null,0,2,3,1]],'DmM7':[[null,null,0,2,2,1]],'Dm6':[[null,5,null,4,6,5]],'D6':[[null,null,0,2,0,2]],'Ddim':[[null,null,3,4,3,4]],'Dsus4':[[null,null,0,2,3,3]],'D9':[[null,null,0,2,1,0]],'DM9':[[null,null,0,2,2,0]],'EbM7':[[null,null,1,3,3,3]],'Eb7':[[null,6,5,6,4,null]],'Ebm7':[[null,6,8,6,7,6]],'Eb':[[null,6,5,3,4,3]],'Ebdim':[[null,null,0,1,0,1]],'D#7':[[null,6,5,6,4,null]],'D#m7':[[null,6,8,6,7,6]],'D#':[[null,6,5,3,4,3]],'D#dim':[[null,null,0,1,0,1]],'EM7':[[0,2,1,1,0,0]],'E7':[[0,2,0,1,0,0]],'Em7':[[0,2,0,0,0,0]],'E':[[0,2,2,1,0,0]],'Em':[[0,2,2,0,0,0]],'EmM7':[[0,2,1,0,0,0]],'Em6':[[0,2,2,0,2,0]],'E6':[[0,2,2,1,2,0]],'Edim':[[null,null,1,2,1,2]],'Esus4':[[0,2,2,2,0,0]],'Em9':[[0,2,0,0,0,2]],'E9':[[0,2,0,1,3,2]],'FM7':[[null,null,3,2,1,0]],'F7':[[1,3,1,2,1,1]],'Fm7':[[1,3,1,1,1,1]],'F':[[1,3,3,2,1,1]],'Fm':[[1,3,3,1,1,1]],'FmM7':[[1,3,2,1,1,1]],'Fm6':[[1,3,3,1,3,1]],'F6':[[null,null,3,2,3,1]],'Fdim':[[null,null,2,3,2,3]],'F9':[[1,3,1,2,3,1]],'F#M7':[[null,null,4,3,2,1]],'F#7':[[2,4,2,3,2,2]],'F#m7':[[2,4,2,2,2,2]],'F#':[[2,4,4,3,2,2]],'F#m':[[2,4,4,2,2,2]],'F#mM7':[[2,4,3,2,2,2]],'F#m6':[[null,2,null,1,3,2]],'F#6':[[2,2,3,4,2,2]],'F#dim':[[null,null,3,4,3,4]],'F#m7b5':[[2,null,2,2,1,null]],'GbM7':[[null,null,4,3,2,1]],'Gb7':[[2,4,2,3,2,2]],'Gbm7':[[2,4,2,2,2,2]],'Gb':[[2,4,4,3,2,2]],'Gbdim':[[null,null,3,4,3,4]],'GM7':[[3,2,0,0,0,2]],'G7':[[3,2,0,0,0,1]],'Gm7':[[3,5,3,3,3,3]],'G':[[3,5,5,4,3,3]],'Gm':[[3,5,5,3,3,3]],'GmM7':[[3,5,4,3,3,3]],'Gm6':[[null,3,null,2,4,3]],'G6':[[3,2,0,0,0,0]],'Gdim':[[null,null,0,1,0,1]],'Gsus4':[[3,3,0,0,1,3]],'GM9':[[3,2,0,0,0,2]],'G9':[[3,2,0,2,0,1]],'Gm9':[[3,5,3,3,3,5]],'G#dim':[[null,null,1,2,1,2]],'AbM7':[[null,null,6,5,4,3]],'Ab7':[[4,6,4,5,4,4]],'Abm7':[[4,6,4,4,4,4]],'Ab':[[4,6,6,5,4,4]],'Abm':[[4,6,6,4,4,4]],'AbmM7':[[4,6,5,4,4,4]],'Abm6':[[null,4,null,3,5,4]],'Ab6':[[4,4,5,6,4,4]],'Abdim':[[null,null,1,2,1,2]],'G#7':[[4,6,4,5,4,4]],'G#m7':[[4,6,4,4,4,4]],'G#':[[4,6,6,5,4,4]],'G#m':[[4,6,6,4,4,4]],'AM7':[[null,0,2,1,2,0]],'A7':[[null,0,2,0,2,0]],'Am7':[[null,0,2,0,1,0]],'A':[[null,0,2,2,2,0]],'Am':[[null,0,2,2,1,0]],'AmM7':[[null,0,2,1,1,0]],'Am6':[[null,0,null,2,1,2]],'A6':[[null,0,2,2,2,2]],'Adim':[[null,null,2,3,2,3]],'Asus4':[[null,0,2,2,3,0]],'A9':[[null,0,2,0,2,3]],'AM9':[[null,0,2,1,2,2]],'Am9':[[5,7,5,5,5,7]],'BbM7':[[null,1,3,2,3,1]],'Bb7':[[null,1,3,1,3,1]],'Bbm7':[[null,1,3,1,2,1]],'Bb':[[null,1,3,3,3,1]],'Bbm':[[null,1,3,3,2,1]],'BbmM7':[[null,1,3,2,2,1]],'Bbm6':[[null,1,null,0,2,1]],'Bb6':[[null,1,3,3,1,1]],'Bbdim':[[null,null,3,4,3,4]],'Bb9':[[null,1,3,1,3,3]],'A#7':[[null,1,3,1,3,1]],'A#m7':[[null,1,3,1,2,1]],'A#':[[null,1,3,3,3,1]],'A#m':[[null,1,3,3,2,1]],'BM7':[[null,2,4,3,4,2]],'B7':[[null,2,1,2,0,2]],'Bm7':[[null,2,4,2,3,2]],'B':[[null,2,4,4,4,2]],'Bm':[[null,2,4,4,3,2]],'BmM7':[[null,2,4,3,3,2]],'Bm6':[[null,2,null,1,3,2]],'B6':[[null,2,4,4,4,4]],'Bdim':[[null,null,0,1,0,1]],'Bm7b5':[[null,2,3,2,3,null]],'Bm9':[[null,2,0,2,2,null]],'Cm9':[[null,3,1,3,3,null]],'C#m9':[[null,4,2,4,4,null]],'Dm9':[[null,5,3,5,5,null]],'Ebm9':[[null,6,4,6,6,null]],'D#m9':[[null,6,4,6,6,null]],'Fm9':[[1,3,1,1,1,3]],'F#m9':[[2,4,2,2,2,4]],'Gbm9':[[2,4,2,2,2,4]],'Abm9':[[4,6,4,4,4,6]],'G#m9':[[4,6,4,4,4,6]],'Bbm9':[[null,1,null,0,2,1]],'A#m9':[[null,1,null,0,2,1]],'CM9':[[8,null,9,7,8,null],[null,3,2,4,3,null]],'C#M9':[[9,null,10,8,9,null],[null,4,3,5,4,null]],'DM9':[[10,null,11,9,10,null],[null,5,4,6,5,null]],'EbM9':[[11,null,12,10,11,null],[null,6,5,7,6,null]],'EM9':[[12,null,13,11,12,null],[null,7,6,8,7,null]],'FM9':[[13,null,14,12,13,null],[null,8,7,9,8,null]],'F#M9':[[14,null,15,13,14,null],[null,9,8,10,9,null]],'GM9':[[15,null,16,14,15,null],[null,10,9,11,10,null]],'AbM9':[[16,null,17,15,16,null],[null,11,10,12,11,null]],'AM9':[[17,null,18,16,17,null],[null,12,11,13,12,null]],'BbM9':[[18,null,19,17,18,null],[null,13,12,14,13,null]],'BM9':[[19,null,20,18,19,null],[null,14,13,15,14,null]],'C7s9':[[null,3,2,3,4,null],[null,null,10,9,11,11]],'C#7s9':[[null,4,3,4,5,null],[null,null,11,10,12,12]],'D7s9':[[null,5,4,5,6,null],[null,null,12,11,13,13]],'Eb7s9':[[null,6,5,6,7,null],[null,null,13,12,14,14]],'E7s9':[[null,7,6,7,8,null],[null,null,14,13,15,15]],'F7s9':[[null,8,7,8,9,null],[null,null,15,14,16,16]],'F#7s9':[[null,9,8,9,10,null],[null,null,16,15,17,17]],'G7s9':[[null,10,9,10,11,null],[null,null,17,16,18,18]],'Ab7s9':[[null,11,10,11,12,null],[null,null,18,17,19,19]],'A7s9':[[null,12,11,12,13,null],[null,null,19,18,20,20]],'Bb7s9':[[null,13,12,13,14,null],[null,null,20,19,21,21]],'B7s9':[[null,14,13,14,15,null],[null,null,21,20,22,22]],'C69':[[8,null,7,7,8,null],[null,3,2,2,3,null]],'C#69':[[9,null,8,8,9,null],[null,4,3,3,4,null]],'D69':[[10,null,9,9,10,null],[null,5,4,4,5,null]],'Eb69':[[11,null,10,10,11,null],[null,6,5,5,6,null]],'E69':[[12,null,11,11,12,null],[null,7,6,6,7,null]],'F69':[[13,null,12,12,13,null],[null,8,7,7,8,null]],'F#69':[[14,null,13,13,14,null],[null,9,8,8,9,null]],'G69':[[15,null,14,14,15,null],[null,10,9,9,10,null]],'Ab69':[[16,null,15,15,16,null],[null,11,10,10,11,null]],'A69':[[17,null,16,16,17,null],[null,12,11,11,12,null]],'Bb69':[[18,null,17,17,18,null],[null,13,12,12,13,null]],'B69':[[19,null,18,18,19,null],[null,14,13,13,14,null]],'Cm69':[[8,null,6,7,8,null],[null,3,1,2,3,null]],'C#m69':[[9,null,7,8,9,null],[null,4,2,3,4,null]],'Dm69':[[10,null,8,9,10,null],[null,5,3,4,5,null]],'Ebm69':[[11,null,9,10,11,null],[null,6,4,5,6,null]],'Em69':[[12,null,10,11,12,null],[null,7,5,6,7,null]],'Fm69':[[13,null,11,12,13,null],[null,8,6,7,8,null]],'F#m69':[[14,null,12,13,14,null],[null,9,7,8,9,null]],'Gm69':[[15,null,13,14,15,null],[null,10,8,9,10,null]],'Abm69':[[16,null,14,15,16,null],[null,11,9,10,11,null]],'Am69':[[17,null,15,16,17,null],[null,12,10,11,12,null]],'Bbm69':[[18,null,16,17,18,null],[null,13,11,12,13,null]],'Bm69':[[19,null,17,18,19,null],[null,14,12,13,14,null]],'C7b9':[[null,3,2,3,2,null],[null,null,10,9,11,9]],'C#7b9':[[null,4,3,4,3,null],[null,null,11,10,12,10]],'D7b9':[[null,5,4,5,4,null],[null,null,12,11,13,11]],'Eb7b9':[[null,6,5,6,5,null],[null,null,13,12,14,12]],'E7b9':[[null,7,6,7,6,null],[null,null,14,13,15,13]],'F7b9':[[null,8,7,8,7,null],[null,null,15,14,16,14]],'F#7b9':[[null,9,8,9,8,null],[null,null,16,15,17,15]],'G7b9':[[null,10,9,10,9,null],[null,null,17,16,18,16]],'Ab7b9':[[null,11,10,11,10,null],[null,null,18,17,19,17]],'A7b9':[[null,12,11,12,11,null],[null,null,19,18,20,18]],'Bb7b9':[[null,13,12,13,12,null],[null,null,20,19,21,19]],'B7b9':[[null,14,13,14,13,null],[null,null,21,20,22,20]],'Cadd9':[[null,3,5,5,3,null],[null,null,10,9,8,10]],'C#add9':[[null,4,6,6,4,null],[null,null,11,10,9,11]],'Dadd9':[[null,5,7,7,5,null],[null,null,12,11,10,12]],'Ebadd9':[[null,6,8,8,6,null],[null,null,13,12,11,13]],'Eadd9':[[null,7,9,9,7,null],[null,null,14,13,12,14]],'Fadd9':[[null,8,10,10,8,null],[null,null,15,14,13,15]],'F#add9':[[null,9,11,11,9,null],[null,null,16,15,14,16]],'Gadd9':[[null,10,12,12,10,null],[null,null,17,16,15,17]],'Abadd9':[[null,11,13,13,11,null],[null,null,18,17,16,18]],'Aadd9':[[null,12,14,14,12,null],[null,null,19,18,17,19]],'Bbadd9':[[null,13,15,15,13,null],[null,null,20,19,18,20]],'Badd9':[[null,14,16,16,14,null],[null,null,21,20,19,21]],'Caug':[[null,3,2,1,1,null],[null,null,10,9,9,8]],'C#aug':[[null,4,3,2,2,null],[null,null,11,10,10,9]],'Daug':[[null,5,4,3,3,null],[null,null,12,11,11,10]],'Ebaug':[[null,6,5,4,4,null],[null,null,13,12,12,11]],'Eaug':[[null,7,6,5,5,null],[null,null,14,13,13,12]],'Faug':[[null,8,7,6,6,null],[null,null,15,14,14,13]],'F#aug':[[null,9,8,7,7,null],[null,null,16,15,15,14]],'Gaug':[[null,10,9,8,8,null],[null,null,17,16,16,15]],'Abaug':[[null,11,10,9,9,null],[null,null,18,17,17,16]],'Aaug':[[null,12,11,10,10,null],[null,null,19,18,18,17]],'Bbaug':[[null,13,12,11,11,null],[null,null,20,19,19,18]],'Baug':[[null,14,13,12,12,null],[null,null,21,20,20,19]],'C7s11':[[8,null,8,9,7,null]],'C#7s11':[[9,null,9,10,8,null]],'D7s11':[[10,null,10,11,9,null]],'Eb7s11':[[11,null,11,12,10,null]],'E7s11':[[12,null,12,13,11,null]],'F7s11':[[13,null,13,14,12,null]],'F#7s11':[[14,null,14,15,13,null]],'G7s11':[[15,null,15,16,14,null]],'Ab7s11':[[16,null,16,17,15,null]],'A7s11':[[17,null,17,18,16,null]],'Bb7s11':[[18,null,18,19,17,null]],'B7s11':[[19,null,19,20,18,null]],'C9s11':[[null,3,2,3,3,2]],'C#9s11':[[null,4,3,4,4,3]],'D9s11':[[null,5,4,5,5,4]],'Eb9s11':[[null,6,5,6,6,5]],'E9s11':[[null,7,6,7,7,6]],'F9s11':[[null,8,7,8,8,7]],'F#9s11':[[null,9,8,9,9,8]],'G9s11':[[null,10,9,10,10,9]],'Ab9s11':[[null,11,10,11,11,10]],'A9s11':[[null,12,11,12,12,11]],'Bb9s11':[[null,13,12,13,13,12]],'B9s11':[[null,14,13,14,14,13]],'Cm711':[[8,null,8,8,6,null]],'C#m711':[[9,null,9,9,7,null]],'Dm711':[[10,null,10,10,8,null]],'Ebm711':[[11,null,11,11,9,null]],'Em711':[[12,null,12,12,10,null]],'Fm711':[[13,null,13,13,11,null]],'F#m711':[[14,null,14,14,12,null]],'Gm711':[[15,null,15,15,13,null]],'Abm711':[[16,null,16,16,14,null]],'Am711':[[17,null,17,17,15,null]],'Bbm711':[[18,null,18,18,16,null]],'Bm711':[[19,null,19,19,17,null]],'Cm911':[[null,3,1,3,3,1]],'C#m911':[[null,4,2,4,4,2]],'Dm911':[[null,5,3,5,5,3]],'Ebm911':[[null,6,4,6,6,4]],'Em911':[[null,7,5,7,7,5]],'Fm911':[[null,8,6,8,8,6]],'F#m911':[[null,9,7,9,9,7]],'Gm911':[[null,10,8,10,10,8]],'Abm911':[[null,11,9,11,11,9]],'Am911':[[null,12,10,12,12,10]],'Bbm911':[[null,13,11,13,13,11]],'Bm911':[[null,14,12,14,14,12]],'C713':[[8,null,8,9,10,null]],'C#713':[[9,null,9,10,11,null]],'D713':[[10,null,10,11,12,null]],'Eb713':[[11,null,11,12,13,null]],'E713':[[12,null,12,13,14,null]],'F713':[[13,null,13,14,15,null]],'F#713':[[14,null,14,15,16,null]],'G713':[[15,null,15,16,17,null]],'Ab713':[[16,null,16,17,18,null]],'A713':[[17,null,17,18,19,null]],'Bb713':[[18,null,18,19,20,null]],'B713':[[19,null,19,20,21,null]],'C913':[[null,3,2,3,3,5]],'C#913':[[null,4,3,4,4,6]],'D913':[[null,5,4,5,5,7]],'Eb913':[[null,6,5,6,6,8]],'E913':[[null,7,6,7,7,9]],'F913':[[null,8,7,8,8,10]],'F#913':[[null,9,8,9,9,11]],'G913':[[null,10,9,10,10,12]],'Ab913':[[null,11,10,11,11,13]],'A913':[[null,12,11,12,12,14]],'Bb913':[[null,13,12,13,13,15]],'B913':[[null,14,13,14,14,16]],'C7b13':[[8,null,8,9,9,null]],'C#7b13':[[9,null,9,10,10,null]],'D7b13':[[10,null,10,11,11,null]],'Eb7b13':[[11,null,11,12,12,null]],'E7b13':[[12,null,12,13,13,null]],'F7b13':[[13,null,13,14,14,null]],'F#7b13':[[14,null,14,15,15,null]],'G7b13':[[15,null,15,16,16,null]],'Ab7b13':[[16,null,16,17,17,null]],'A7b13':[[17,null,17,18,18,null]],'Bb7b13':[[18,null,18,19,19,null]],'B7b13':[[19,null,19,20,20,null]],'C9b13':[[null,3,2,3,3,4]],'C#9b13':[[null,4,3,4,4,5]],'D9b13':[[null,5,4,5,5,6]],'Eb9b13':[[null,6,5,6,6,7]],'E9b13':[[null,7,6,7,7,8]],'F9b13':[[null,8,7,8,8,9]],'F#9b13':[[null,9,8,9,9,10]],'G9b13':[[null,10,9,10,10,11]],'Ab9b13':[[null,11,10,11,11,12]],'A9b13':[[null,12,11,12,12,13]],'Bb9b13':[[null,13,12,13,13,14]],'B9b13':[[null,14,13,14,14,15]]};
+function getShapeForChord(n){return(SHAPES[n]&&SHAPES[n][0])||null;}
+function drawNeck(shape,label,bassNote,commonNums,rootNum){
+  var st=6,fr=5,sw=48,sh=34,ox=44,oy=26;
+  var H=oy+sh*(st-1)+(bassNote?48:commonNums?42:36),W=ox+sw*fr+32;
+  var vf=shape.filter(function(f){return f!==null&&f>0;});
+  var minF=vf.length?Math.min.apply(null,vf):0,maxF=vf.length?Math.max.apply(null,vf):0;
+  var isOpen=maxF<=4,startF=isOpen?0:minF-1;
+  var openTuning=[4,11,7,2,9,4];
+  var disp=bassNote?(label+'/'+bassNote):label;
+  var s='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg">';
+  s+='<text x="'+(W/2)+'" y="16" text-anchor="middle" font-size="13" font-weight="500" fill="#1a1a1a" font-family="sans-serif">'+disp+'</text>';
+  for(var f=0;f<=fr;f++){var x=ox+f*sw;s+='<line x1="'+x+'" y1="'+oy+'" x2="'+x+'" y2="'+(oy+sh*(st-1))+'" stroke="#6b7280" stroke-width="'+(f===0?2:.5)+'" opacity="'+(f===0?1:.4)+'"/>';}
+  for(var i=0;i<st;i++){var y=oy+i*sh;s+='<line x1="'+ox+'" y1="'+y+'" x2="'+(ox+sw*fr)+'" y2="'+y+'" stroke="#6b7280" stroke-width=".8" opacity=".35"/>';}
+  if(!isOpen&&startF>0)s+='<text x="'+(ox-4)+'" y="'+(oy+7)+'" text-anchor="end" font-size="10" fill="#6b7280" font-family="sans-serif">'+(startF+1)+'fr</text>';
+  [3,5,7,9,12].forEach(function(df){var ff=df-startF;if(ff>=1&&ff<=fr)s+='<circle cx="'+(ox+(ff-.5)*sw)+'" cy="'+(oy+sh*(st-1)/2)+'" r="3" fill="#e5e7eb" opacity=".8"/>';}); 
+  for(var i=0;i<st;i++){
+    var si=st-1-i,fret=shape[si],y=oy+i*sh,openNote=openTuning[si];
+    if(fret===null){s+='<text x="'+(ox-12)+'" y="'+(y+4)+'" text-anchor="middle" font-size="11" fill="#6b7280" font-family="sans-serif">x</text>';}
+    else if(fret===0){
+      var nn=openNote%12;
+      if(commonNums){var isRoot=nn===rootNum,isC=commonNums.indexOf(nn)>=0;var col=isRoot?'#1a1a1a':isC?'#E08030':'#6b7280';s+='<circle cx="'+(ox-12)+'" cy="'+y+'" r="6" fill="none" stroke="'+col+'" stroke-width="'+(isC||isRoot?2:1)+'"/>';}
+      else{s+='<circle cx="'+(ox-12)+'" cy="'+y+'" r="5" fill="none" stroke="#6b7280" stroke-width="1.5"/>';}
+    }else{
+      var relF=fret-startF;
+      if(relF>=1&&relF<=fr){
+        var cx=ox+(relF-.5)*sw;
+        if(commonNums){var nn=(openNote+fret)%12,isRoot=nn===rootNum,isC=commonNums.indexOf(nn)>=0;var fillCol=isRoot?'#1a1a1a':isC?'#E08030':'#8A9AA8';s+='<circle cx="'+cx+'" cy="'+y+'" r="10" fill="'+fillCol+'"/>';s+='<text x="'+cx+'" y="'+(y+4)+'" text-anchor="middle" font-size="10" fill="white" font-weight="500" font-family="sans-serif">'+fret+'</text>';}
+        else{s+='<circle cx="'+cx+'" cy="'+y+'" r="10" fill="#1a1a1a"/>';s+='<text x="'+cx+'" y="'+(y+4)+'" text-anchor="middle" font-size="10" fill="#fff" font-weight="500" font-family="sans-serif">'+fret+'</text>';}
+      }
+    }
+  }
+  if(bassNote)s+='<text x="'+(W/2)+'" y="'+(oy+sh*(st-1)+22)+'" text-anchor="middle" font-size="10" fill="#6b7280" font-family="sans-serif">bass: '+bassNote+'</text>';
+  if(commonNums){s+='<circle cx="'+ox+'" cy="'+(H-10)+'" r="5" fill="#1a1a1a"/><text x="'+(ox+8)+'" y="'+(H-6)+'" font-size="9" fill="#6b7280" font-family="sans-serif">ルート</text>';s+='<circle cx="'+(ox+55)+'" cy="'+(H-10)+'" r="5" fill="#E08030"/><text x="'+(ox+63)+'" y="'+(H-6)+'" font-size="9" fill="#6b7280" font-family="sans-serif">共通音</text>';s+='<circle cx="'+(ox+110)+'" cy="'+(H-10)+'" r="5" fill="#8A9AA8"/><text x="'+(ox+118)+'" y="'+(H-6)+'" font-size="9" fill="#6b7280" font-family="sans-serif">その他</text>';}
+  return s+'</svg>';
+}
+function voltaSVG(){return '<svg width="280" height="52" viewBox="0 0 300 52" xmlns="http://www.w3.org/2000/svg"><line x1="20" y1="40" x2="20" y2="14" stroke="#1a1a1a" stroke-width="1.5"/><line x1="20" y1="14" x2="120" y2="14" stroke="#1a1a1a" stroke-width="1.5"/><text x="28" y="32" font-size="13" fill="#1a1a1a" font-weight="500" font-family="sans-serif">1.</text><text x="70" y="32" text-anchor="middle" font-size="11" fill="#6b7280" font-family="sans-serif">1番括弧</text><line x1="165" y1="40" x2="165" y2="14" stroke="#1a1a1a" stroke-width="1.5"/><line x1="165" y1="14" x2="290" y2="14" stroke="#1a1a1a" stroke-width="1.5"/><line x1="290" y1="14" x2="290" y2="40" stroke="#1a1a1a" stroke-width="1.5"/><text x="173" y="32" font-size="13" fill="#1a1a1a" font-weight="500" font-family="sans-serif">2.</text><text x="227" y="32" text-anchor="middle" font-size="11" fill="#6b7280" font-family="sans-serif">2番括弧</text></svg>';}
+function flowHTML(){
+  var rs=SVG_REP_START,re=SVG_REP_END,co=SVG_CODA,se=SVG_SEGNO;
+  return '<div class="n-card"><div class="tag">進み方</div><div class="n-title">譜面の進み方パターン</div><div class="n-sub">繰り返し・ジャンプ記号の読み方</div><div class="n-desc" style="font-size:13px;color:#6b7280;line-height:1.65;">記号が出たらその指示でジャンプする。今どこか・何回目かを常に意識することが大切。</div><div class="n-tip">セッション前に譜面全体を眺めてジャンプ先を把握してから演奏を始めるのが鉄則。</div></div>'
+  +'<div class="pattern-block"><div class="pattern-title">① リピートのみ</div><ol class="pattern-steps"><li>'+rs+' から演奏開始</li><li>'+re+' に到達したら '+rs+' に戻る</li><li>2回目は '+re+' を無視してそのまま進む</li></ol></div>'
+  +'<div class="pattern-block"><div class="pattern-title">② 1番・2番括弧</div><ol class="pattern-steps"><li>'+rs+' から演奏、<span class="sym">[1.</span> を弾く</li><li>'+re+' に到達したら '+rs+' に戻る</li><li>2回目は <span class="sym">[1.</span> を飛ばして <span class="sym">[2.</span> へ</li></ol></div>'
+  +'<div class="pattern-block"><div class="pattern-title">③ D.C. al Fine</div><ol class="pattern-steps"><li>最初から演奏（途中の <span class="sym">Fine</span> は1回目スルー）</li><li><span class="sym">D.C.</span> で曲の頭に戻る</li><li><span class="sym">Fine</span> で終了</li></ol></div>'
+  +'<div class="pattern-block"><div class="pattern-title">④ D.S. al Coda</div><ol class="pattern-steps"><li>最初から演奏（途中の To Coda '+co+' は1回目スルー）</li><li><span class="sym">D.S.</span> で '+se+' セーニョに戻る</li><li>To Coda '+co+' で '+co+' Coda へジャンプして終了</li></ol></div>'
+  +'<div class="n-card"><div style="font-size:13px;font-weight:500;color:#1a1a1a;margin-bottom:.5rem;">共通ルール</div><div class="rule-block"><div>・ Fine / To Coda は「戻ってきた2回目」にだけ有効</div><div>・ D.S. / D.C. は「通過したとき」に発動。2回目以降は無視</div></div></div>';
+}
+const NOTATIONS={
+  repeat:{tag:'繰り返し',title:'リピート記号',sub:'Repeat Sign',
+    sym:SVG_REP_START+' ～ '+SVG_REP_END,
+    desc:'リピート開始記号からリピート終止記号までを繰り返す。開始記号がない場合は曲の最初に戻る。',
+    tip:'「頭から繰り返して」と言われたら曲の最初へ。括弧だけある場合は直前のリピート記号まで戻る。'},
+  volta:{tag:'繰り返し',title:'1番括弧・2番括弧',sub:'Prima Volta / Seconda Volta',sym:'volta',
+    desc:'リピートの1回目は「1番括弧」を弾き、2回目は1番括弧をスキップして次の括弧へ進む。括弧は3番・4番と続くこともある。',
+    tip:'括弧は3番・4番と続くこともある。どの括弧がどこへ続くか、必ず事前に確認しておく。'},
+  dc:{tag:'ジャンプ',title:'ダ・カーポ',sub:'D.C. = Da Capo（頭から）',sym:'D.C.',
+    desc:'D.C. と書かれた場所で、曲の一番最初（頭）に戻る。',
+    tip:'"ダカーポ"と言われたらとにかく頭に戻る。'},
+  ds:{tag:'ジャンプ',title:'ダル・セーニョ',sub:'D.S. = Dal Segno',sym:SVG_SEGNO+' セーニョ（D.S.）',
+    desc:'D.S. と書かれた場所で、セーニョの位置に戻る。D.C.との違いは「頭ではなくセーニョの位置に戻る」こと。',
+    tip:'"ダルセーニョ"と言われたらセーニョマークを探す。'},
+  coda:{tag:'ジャンプ',title:'コーダ',sub:'Coda',sym:SVG_CODA+' Coda',
+    desc:'「To Coda」と書かれた場所でコーダの位置へジャンプ。1回目は素通りし、戻ってきた2回目にジャンプが発動する。',
+    tip:'"コーダ行って"と言われたらコーダマークへジャンプ。'},
+  segno:{tag:'ジャンプ',title:'セーニョ',sub:'Segno',sym:SVG_SEGNO+' S/セーニョ',
+    desc:'D.S. のジャンプ先を示すマーク。単独では機能せず D.S. とセットで使う。',
+    tip:'セッション前にセーニョとコーダの位置を確認する習慣をつけると安心。'},
+  dynamics:{tag:'強弱',title:'強弱記号',sub:'Dynamics',sym:'pp  p  mp  mf  f  ff',
+    desc:'pp（ピアニッシモ）が最も弱く、ff（フォルティッシモ）が最も強い。cresc.は徐々に強く、decresc./dim.は徐々に弱く。',
+    tip:'"ダイナミクスつけて"と言われたら強弱の緩急を意識する。'},
+  tempo:{tag:'速度',title:'速度記号',sub:'Tempo Markings',sym:'Largo → Andante → Moderato → Allegro → Presto',
+    desc:'Largo（非常に遅く）Andante（歩く速さ）Moderato（中くらい）Allegro（速く）Presto（非常に速く）。',
+    tip:'"テンポ上げて"はBPMを上げること。rit.とaccel.はよく出るので覚えておく。'},
+  fine:{tag:'終止',title:'フィーネ',sub:'Fine（終わり）',sym:'Fine',
+    desc:'「ここで終わり」を示す記号。曲の途中に書いてあっても1回目は素通りし、D.C./D.S.で戻ってきた2回目に終了する。',
+    tip:'1回目は素通り、戻ってきた2回目にFineで止まる。'},
+  tacet:{tag:'指示',title:'タセット',sub:'Tacet（休め）',sym:'Tacet',
+    desc:'「そのセクションは弾かない（休め）」という指示。',
+    tip:'自分のパート譜にTacetがあったら丸ごと休み。'},
+  slash:{tag:'記譜法',title:'スラッシュ譜',sub:'Slash Notation',sym:'/ / / /',
+    desc:'コードネームだけ書かれた簡易譜面。スラッシュ1つが1拍を表す。',
+    tip:'コードさえ合っていればボイシングやリズムは自分で決めてOK。'}};
+const PROXY_CHORD_INTERVALS={'':  [0,4,7],'m':[0,3,7],'7':[0,4,7,10],'M7':[0,4,7,11],'m7':[0,3,7,10],'dim':[0,3,6],'dim7':[0,3,6,9],'m7b5':[0,3,6,10],'aug':[0,4,8],'sus4':[0,5,7],'sus2':[0,2,7],'6':[0,4,7,9],'m6':[0,3,7,9],'mM7':[0,3,7,11],'add9':[0,4,7,14],'9':[0,4,7,10,14],'M9':[0,4,7,11,14],'m9':[0,3,7,10,14],'69':[0,4,7,9,14],'m69':[0,3,7,9,14],'7b9':[0,4,7,10,13],'7s9':[0,4,7,10,15],'7s11':[0,4,10,14,6],'7b13':[0,4,7,10,8],'713':[0,4,7,10,21],'m711':[0,3,10,14,17]};
+const PROXY_TYPE_LABELS={'':'メジャー','m':'マイナー','7':'7th','M7':'M7','m7':'m7','dim':'dim','dim7':'dim7','m7b5':'m7♭5','aug':'aug','sus4':'sus4','sus2':'sus2','6':'6','m6':'m6','mM7':'mM7','add9':'add9','9':'9','M9':'M9','m9':'m9','69':'6/9','m69':'m6/9','7b9':'7♭9','7s9':'7♯9','7s11':'7♯11','7b13':'7♭13','713':'7・13','m711':'m7・11'};
+function pDT(t){var m={'m7b5':'m7♭5','dim7':'dim7','M9':'M9','m9':'m9','69':'6/9','m69':'m6/9','7b9':'7♭9','7s9':'7♯9','mM7':'mM7','add9':'add9','sus2':'sus2','sus4':'sus4','7s11':'7♯11','7b13':'7♭13','713':'7・13','m711':'m7【11'};return m[t]||t;}
+function pGetNotes(root,type){var ri=NOTE_TO_IDX[root];return PROXY_CHORD_INTERVALS[type].map(function(i){return(ri+i)%12;});}
+function pCommon(a,b){return a.filter(function(n){return b.indexOf(n)>=0;});}
+function pGetShape(root,type){var key=root+pDT(type);return SHAPES[key]?SHAPES[key][0]:null;}
+var PROXY_ROOTS=['C','C#','D','Eb','E','F','F#','G','Ab','A','Bb','B'];
+var PROXY_TYPES=Object.keys(PROXY_CHORD_INTERVALS);
+var pSelRoot='C',pSelType='M7';
+function initProxyRoots(){
+  var el=document.getElementById('proxy-root-row');
+  PROXY_ROOTS.forEach(function(r){
+    var b=document.createElement('button');
+    b.className='pill'+(r===pSelRoot?' active':'');
+    b.dataset.val=r;b.textContent=r;
+    b.addEventListener('click',function(){
+      pSelRoot=r;
+      document.querySelectorAll('#proxy-root-row .pill').forEach(function(x){x.classList.toggle('active',x.dataset.val===r);});
+    });
+    el.appendChild(b);
+  });
+}
+function initProxyTypes(){
+  var el=document.getElementById('proxy-type-row');
+  var groups=[
+    {label:'メジャー系',types:['','7','M7','6','add9','M9','9','69','7b9','7s9','7s11','7b13','713','aug','sus2','sus4']},
+    {label:'マイナー系',types:['m','m7','mM7','m6','m7b5','dim','dim7','m9','m69','m711']}
+  ];
+  groups.forEach(function(group){
+    var hdr=document.createElement('div');
+    hdr.style.cssText='font-size:10px;font-weight:600;color:#C97D3A;letter-spacing:.07em;text-transform:uppercase;width:100%;margin:.5rem 0 .3rem;';
+    hdr.textContent=group.label;el.appendChild(hdr);
+    var row=document.createElement('div');
+    row.style.cssText='display:flex;gap:5px;flex-wrap:wrap;margin-bottom:.5rem;';
+    group.types.forEach(function(t){
+      if(!PROXY_CHORD_INTERVALS[t])return;
+      var b=document.createElement('button');
+      b.className='pill'+(t===pSelType?' active':'');
+      b.dataset.val=t;b.textContent=PROXY_TYPE_LABELS[t];
+      b.addEventListener('click',function(){
+        pSelType=t;
+        document.querySelectorAll('#proxy-type-row .pill').forEach(function(x){x.classList.toggle('active',x.dataset.val===t);});
+      });
+      row.appendChild(b);
+    });
+    el.appendChild(row);
+  });
+}
+function doSearch(){
+  var targetNotes=pGetNotes(pSelRoot,pSelType),targetRootIdx=NOTE_TO_IDX[pSelRoot],targetSize=targetNotes.length,chordName=pSelRoot+pDT(pSelType);
+  document.getElementById('proxy-target-info').innerHTML='<strong>'+chordName+'</strong>&nbsp;構成音: '+targetNotes.map(noteNumToName).join(' - ')+'（'+targetSize+'音）';
+  var rP=[],rC=[],r4=[],r3=[];
+  PROXY_ROOTS.forEach(function(root){
+    if(NOTE_TO_IDX[root]===targetRootIdx)return;
+    PROXY_TYPES.forEach(function(type){
+      var notes=pGetNotes(root,type),common=pCommon(targetNotes,notes),cnt=common.length;
+      if(cnt<3)return;
+      var os=notes.length,isPerfect=(cnt===targetSize&&cnt===os),isContain=!isPerfect&&(cnt===targetSize||cnt===os);
+      if(isPerfect)rP.push({root:root,type:type,notes:notes,common:common});
+      else if(isContain)rC.push({root:root,type:type,notes:notes,common:common});
+      else if(cnt>=4)r4.push({root:root,type:type,notes:notes,common:common});
+      else r3.push({root:root,type:type,notes:notes,common:common});
+    });
+  });
+  var MAX=30,total=0;
+  function limited(arr){var r=arr.slice(0,Math.max(0,MAX-total));total+=r.length;return r;}
+  function mkCard(r,isPerfect,isContain){
+    var name=r.root+pDT(r.type),cn=r.common.map(noteNumToName).join(' - '),cs=r.common.join(','),other=r.notes.filter(function(n){return r.common.indexOf(n)<0;}).map(noteNumToName);
+    if(isPerfect||isContain){
+      var cls=isPerfect?'card-perfect':'card-contain',cc=isPerfect?'perfect':'contain',icon=isPerfect?'&#9889;':'&#127775;';
+      var desc=isPerfect?'全構成音が一致 — 完全代理が可能':(other.length?'追加音: '+other.join(', '):'包含');
+      return '<div class="special-card '+cls+'" data-root="'+r.root+'" data-type="'+r.type+'" data-common="'+cs+'" data-rootidx="'+targetRootIdx+'" data-name="'+name+'"><div class="special-chord '+cc+'">'+icon+' '+name+'</div><div class="special-notes">共通音: '+cn+(other.length?' / 追加音: '+other.join(', '):'')+' </div><div class="special-desc">'+desc+'</div></div>';
+    }
+    return '<div class="result-card" data-root="'+r.root+'" data-type="'+r.type+'" data-common="'+cs+'" data-rootidx="'+targetRootIdx+'" data-name="'+name+'"><div class="rname">'+name+'</div><div class="rcommon">共通: <span>'+r.common.map(noteNumToName).join(', ')+'</span></div></div>';
+  }
+  var lP=limited(rP),lC=limited(rC),l4=limited(r4),l3=limited(r3),html='';
+  if(lP.length){html+='<div class="special-section"><div class="special-header header-perfect">&#9889; 構成音が完全一致</div>';lP.forEach(function(r){html+=mkCard(r,true,false);});html+='</div>';}
+  if(lC.length){html+='<div class="special-section"><div class="special-header header-contain">&#127775; 完全包含</div>';lC.forEach(function(r){html+=mkCard(r,false,true);});html+='</div>';}
+  if(l4.length){html+='<div class="sec-title">&#128308; 4音共通（'+l4.length+'件）</div><div class="result-grid">';l4.forEach(function(r){html+=mkCard(r,false,false);});html+='</div>';}
+  if(l3.length){html+='<div class="sec-title">&#128992; 3音共通（'+l3.length+'件）</div><div class="result-grid">';l3.forEach(function(r){html+=mkCard(r,false,false);});html+='</div>';}
+  if(!html)html='<div style="color:#6b7280;font-size:13px;margin-top:.5rem;">共通音コードが見つかりませんでした。</div>';
+  document.getElementById('proxy-results').innerHTML=html;
+  document.getElementById('proxy-neck-wrap').innerHTML='';
+  document.getElementById('proxy-neck-label').style.display='none';
+  document.querySelectorAll('#proxy-results .special-card,#proxy-results .result-card').forEach(function(card){
+    card.addEventListener('click',function(){
+      document.querySelectorAll('#proxy-results .special-card,#proxy-results .result-card').forEach(function(c){c.classList.remove('active');});
+      this.classList.add('active');
+      var shape=pGetShape(this.dataset.root,this.dataset.type),common=this.dataset.common.split(',').map(Number),rootIdx=parseInt(this.dataset.rootidx);
+      lastProxyShape=shape;lastProxyName=this.dataset.name;lastProxyCommon=common;lastProxyRootIdx=rootIdx;
+      document.getElementById('proxy-neck-label').style.display='block';
+      var info=getIntervalsForChord(this.dataset.name);
+      if(currentProxyInst==='bass'){
+        document.getElementById('proxy-neck-wrap').innerHTML=drawBassNeck(info.root,info.intervals,this.dataset.name);
+      }else if(currentProxyInst==='keys'){
+        document.getElementById('proxy-neck-wrap').innerHTML=drawKeyboard(info.root,info.intervals,this.dataset.name);
+      }else{
+        var proxyBaseInfo=getIntervalsForChord(this.dataset.name);
+        var proxyFiltIvs=applyOmit(proxyBaseInfo.intervals,proxyOmitFlags);
+        var proxyInfo={root:proxyBaseInfo.root,intervals:proxyFiltIvs};
+        var proxyFormHtml=shape?drawNeck(shape,this.dataset.name,null,common,rootIdx):'<div style="font-size:12px;color:#6b7280;margin-bottom:.75rem;">フォームデータ未登録</div>';
+        var proxyMapLabel='<div class="slabel" style="margin-top:.85rem;">ギター構成音マップ</div>';
+        var proxyMapHtml=drawGuitarMap(proxyInfo.root,proxyInfo.intervals,this.dataset.name);
+        document.getElementById('proxy-neck-wrap').innerHTML=proxyFormHtml+proxyMapLabel+proxyMapHtml;
+      }
+    });
+  });
+}
+function buildGuide(){
+  var items=[
+    {role:'セブンス（緊張）',rc:'rb-t',num:'① ２−５に分ける',method:'セカンダリードミナント展開',theory:'直前にマイナーコードを置き、1つの和音を2つに分割する。',meta:'ジャンプの前に<strong>「長い助走」</strong>をつける。',orig:[{c:'CM7',l:'I'},{c:'G7',l:'V7'},{c:'CM7',l:'I'}],sub:[{c:'CM7',l:'I'},{c:'Dm7',l:'IIm7',h:1},{c:'G7',l:'V7',h:1},{c:'CM7',l:'I'}],note:'G7の前にDm7を追加して2−5に。解決感が強くなる。'},
+    {role:'セブンス（緊張）',rc:'rb-t',num:'② 裏コード',method:'トリトネットサブスティチューション',theory:'構成音が似ている真裏のセブンスコードにすり替える。',meta:'大通りを外れ、<strong>「路地裏」</strong>を通る。',orig:[{c:'CM7',l:'I'},{c:'G7',l:'V7'},{c:'CM7',l:'I'}],sub:[{c:'CM7',l:'I'},{c:'Db7',l:'bII7',h:1},{c:'CM7',l:'I'}],note:'G7を半音上のDb7に置き換え。ベースがDb→Cと半音で落ちて解決。'},
+    {role:'セブンス（緊張）',rc:'rb-t',num:'③ ディミニッシュ変換',method:'パッシングディミニッシュ',theory:'ベース音を半音上げ、ディミニッシュコードにする。',meta:'段差をなくし<strong>「スロープ」</strong>にする。',orig:[{c:'FM7',l:'IV'},{c:'G7',l:'V7'},{c:'Am7',l:'VIm7'}],sub:[{c:'FM7',l:'IV'},{c:'G#dim',l:'dim',h:1},{c:'Am7',l:'VIm7'}],note:'G7の代わりにG#dim。ベースがG#→Aと半音上昇しAm7へ滑らかに解決。'},
+    {role:'I（安定）',rc:'rb-s',num:'④ 寄り道（IIIm/VIm）',method:'トニック代理',theory:'最も安定したコードの代わりに、親戚関係の少し暗いコードを使う。',meta:'リビングに行かず<strong>「自分の部屋に寄り道」</strong>する。',orig:[{c:'CM7',l:'I'},{c:'Dm7',l:'IIm7'},{c:'G7',l:'V7'},{c:'CM7',l:'I'}],sub:[{c:'Em7',l:'IIIm7',h:1},{c:'Dm7',l:'IIm7'},{c:'G7',l:'V7'},{c:'CM7',l:'I'}],note:'冒頭のCM7をEm7に置き換え。C・E・G共有の親戚コード。'},
+    {role:'IV（展開）',rc:'rb-e',num:'⑤ 乗り換え（IIm）',method:'サブドミナント代理',theory:'外へ向かうコードの代わりに同じ役割の別コードを使う。',meta:'徒歩ではなく<strong>「自転車に乗り換える」</strong>。',orig:[{c:'CM7',l:'I'},{c:'FM7',l:'IV'},{c:'G7',l:'V7'},{c:'CM7',l:'I'}],sub:[{c:'CM7',l:'I'},{c:'Dm7',l:'IIm7',h:1},{c:'G7',l:'V7'},{c:'CM7',l:'I'}],note:'FM7の代わりにDm7。F・A・C共有のサブドミナント代理。'},
+    {role:'IV（展開）',rc:'rb-e',num:'⑥ 郷愁のスパイス',method:'モーダルインターチェンジ',theory:'明るい曲の中で一瞬だけマイナーキーのコードを借りる。',meta:'風景に一瞬だけ<strong>「セピア色の写真」</strong>を重ねる。',orig:[{c:'CM7',l:'I'},{c:'FM7',l:'IV'},{c:'G7',l:'V7'},{c:'CM7',l:'I'}],sub:[{c:'CM7',l:'I'},{c:'Fm7',l:'IVm',h:1},{c:'G7',l:'V7'},{c:'CM7',l:'I'}],note:'FM7をFm7に置き換え。Abが入り一瞬の翳りが生まれる。'}
+  ];
+  function row(chords,lbl){
+    var r='<div class="pr"><div class="pl">'+lbl+'</div>';
+    chords.forEach(function(cd,i){if(i>0)r+='<div class="as">→</div>';r+='<div class="cc"><div class="ch'+(cd.h?' hl':'')+'">'+cd.c+'</div><div class="cl'+(cd.h?' hl':'')+'">'+cd.l+'</div></div>';});
+    return r+'</div>';
+  }
+  return items.map(function(it){
+    return '<div class="pc"><div class="pc-top"><div><div class="rb '+it.rc+'">'+it.role+'</div></div><div><div class="pc-num">'+it.num+'</div><div class="pc-method">'+it.method+'</div><div class="pc-theory">'+it.theory+'</div><div class="pc-meta">'+it.meta+'</div></div></div><div class="ex-area"><div class="ex-label">Key C の例</div>'+row(it.orig,'元：')+row(it.sub,'代理：')+'<div class="nt">'+it.note+'</div></div></div>';
+  }).join('');
+}
+var ALL_KEYS=['C','G','D','A','E','B','F','Bb','Eb','Ab','Db','Gb'];
+var selKey='C',selPattern='251',selChordIdx=0,selVar=1;
+function showScreen(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.getElementById('screen-'+id).classList.add('active');}
+function getSeq(){
+  var p=PATTERNS[selPattern];
+  if(selPattern==='blues-ending')return selVar===1?BLUES_ENDING_VAR1.chords(selKey):BLUES_ENDING_VAR2.chords(selKey);
+  return p.degrees.map(function(d,i){return{name:getNote(d,selKey)+p.qualities[i],bass:null};}); 
+}
+function renderChord(){
+  var p=PATTERNS[selPattern],isEnding=selPattern==='blues-ending';
+  var tabArea=document.getElementById('tab-area');
+  if(isEnding){tabArea.innerHTML='<div class="slabel">バリエーション</div><div class="tab-row"><button class="tab-btn '+(selVar===1?'active':'')+'" onclick="selVar=1;selChordIdx=0;renderChord()">Var.1 ターンアラウンド</button><button class="tab-btn '+(selVar===2?'active':'')+'" onclick="selVar=2;selChordIdx=0;renderChord()">Var.2 クロマチック</button></div>';}
+  else{tabArea.innerHTML='';}
+  var seq=getSeq(),labels=isEnding?null:(DEGREE_LABELS[selPattern]||[]);
+  var what='',desc='',session='';
+  if(isEnding){var v=selVar===1?BLUES_ENDING_VAR1:BLUES_ENDING_VAR2;what=v.what;desc=v.desc;session=v.session;}
+  else{what=PATTERN_WHAT[selPattern]||'';desc=p.desc;session=p.session;}
+  document.getElementById('info-bar').innerHTML='<strong>'+selKey+'キー / '+p.label+(isEnding?' Var.'+selVar:'')+'</strong>'+(desc?' &nbsp;·&nbsp; '+desc:'')+'<br><span style="font-size:11.5px;">'+what+'</span><br><span style="font-size:10px;opacity:.6;">セッションでの呼ばれ方：'+session+'</span>';
+  selChordIdx=Math.min(selChordIdx,seq.length-1);
+  var seqEl=document.getElementById('chord-seq');seqEl.innerHTML='';
+  seq.forEach(function(ch,i){
+    if(i>0){var a=document.createElement('span');a.className='arr';a.textContent='→';seqEl.appendChild(a);}
+    var wrap=document.createElement('div');wrap.className='chord-wrap';
+    var dispName=ch.bass?(ch.name+'/'+ch.bass):ch.name;
+    var box=document.createElement('div');box.className='chord-box'+(i===selChordIdx?' active-chord':'');box.textContent=dispName;
+    box.onclick=(function(idx){return function(){selChordIdx=idx;renderChord();};})(i);
+    wrap.appendChild(box);
+    if(isEnding&&ch.label){var lbl=document.createElement('div');lbl.className='chord-label';lbl.innerHTML=ch.label+'<br><span class="role">'+ch.role+'</span>';wrap.appendChild(lbl);}
+    else if(!isEnding&&labels&&labels[i]){var lbl=document.createElement('div');lbl.className='chord-label';lbl.innerHTML=labels[i][0]+'<br><span class="role">'+labels[i][1]+'</span>';wrap.appendChild(lbl);}
+    seqEl.appendChild(wrap);
+  });
+  var ch=seq[selChordIdx];
+  var baseInfo=getIntervalsForChord(ch.name);
+  var filteredIvs=applyOmit(baseInfo.intervals,omitFlags);
+  var info={root:baseInfo.root,intervals:filteredIvs};
+  if(currentInst==='bass'){
+    document.getElementById('neck-wrap').innerHTML=drawBassNeck(info.root,info.intervals,ch.name);
+  }else if(currentInst==='keys'){
+    document.getElementById('neck-wrap').innerHTML=drawKeyboard(info.root,info.intervals,ch.name);
+  }else{
+    var shape=getShapeForChord(ch.name);
+    var formHtml=shape?drawNeck(shape,ch.name,ch.bass||null,null,null):'<div style="font-size:12px;color:#6b7280;margin-bottom:.75rem;">フォームデータ未登録</div>';
+    var mapLabel='<div class="slabel" style="margin-top:.85rem;">ギター構成音マップ</div>';
+    var mapHtml=drawGuitarMap(info.root,info.intervals,ch.name);
+    document.getElementById('neck-wrap').innerHTML=formHtml+mapLabel+mapHtml;
+  }
+}
+function renderNotation(key){
+  if(key==='flow'){document.getElementById('notation-content').innerHTML=flowHTML();return;}
+  var n=NOTATIONS[key];if(!n)return;
+  var symHtml='';
+  if(key==='volta'){symHtml='<div style="margin-bottom:.75rem;">'+voltaSVG()+'</div>';}
+  else if(n.sym){symHtml='<div class="n-sym">'+n.sym+'</div>';}
+  document.getElementById('notation-content').innerHTML='<div class="n-card"><div class="tag">'+n.tag+'</div><div class="n-title">'+n.title+'</div><div class="n-sub">'+n.sub+'</div>'+symHtml+'<div class="n-desc">'+n.desc+'</div><div class="n-tip">'+n.tip+'</div></div>';
+}
+function initKeys(){
+  var el=document.getElementById('key-row');
+  ALL_KEYS.forEach(function(k){
+    var b=document.createElement('button');b.className='pill'+(k===selKey?' active':'');b.textContent=k;
+    b.onclick=function(){selKey=k;selChordIdx=0;document.querySelectorAll('#key-row .pill').forEach(function(x){x.classList.remove('active');});b.classList.add('active');renderChord();};
+    el.appendChild(b);
+  });
+}
+
+
+// ============================================================
+// ギター構成音マップ（6弦・12フレット）
+// ============================================================
+function drawGuitarMap(rootNote, intervals, chordName) {
+  var rootIdx = NOTE_TO_IDX[rootNote];
+  var labelDef = {0:'R',1:'b9',2:'9',3:'b3',4:'3',5:'11',6:'#11',7:'5',8:'b13',9:'13',10:'b7',11:'7'};
+  var colorMap = {
+    'R':'#D32F2F','3':'#C97D3A','b3':'#2A6F97','5':'#6b7280',
+    'b7':'#2E7D32','7':'#2E7D32','9':'#8B4513','b9':'#8B4513',
+    '#9':'#8B4513','11':'#6A0DAD','#11':'#6A0DAD',
+    '13':'#B8860B','b13':'#B8860B'
+  };
+
+  // 構成音セット（オクターブ正規化）
+  var noteSet = intervals.map(function(iv){ return (rootIdx + iv) % 12; });
+
+  var strings = 6;
+  var frets = 12;
+  var sw = 36, sh = 26, ox = 44, oy = 20;
+  var H = oy + sh * (strings-1) + 38;
+  var W = ox + sw * frets + 24;
+
+  // 6弦開放音（低→高: E,A,D,G,B,E）
+  var openTuning = [4,9,2,7,11,4];
+  var stringNames = ['E','B','G','D','A','E'];
+
+  var s = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg">';
+
+  // ナット
+  s += '<line x1="' + ox + '" y1="' + oy + '" x2="' + ox + '" y2="' + (oy+sh*(strings-1)) + '" stroke="#1a1a1a" stroke-width="3"/>';
+
+  // フレット線
+  for (var f = 1; f <= frets; f++) {
+    var x = ox + f * sw;
+    var isMarker = [3,5,7,9,12].indexOf(f) >= 0;
+    s += '<line x1="' + x + '" y1="' + oy + '" x2="' + x + '" y2="' + (oy+sh*(strings-1)) + '" stroke="#6b7280" stroke-width="' + (f===12?1.5:.6) + '" opacity=".5"/>';
+    if (isMarker) {
+      var mx = ox + (f-.5)*sw;
+      var my = oy + sh*(strings-1)/2;
+      if (f===12) {
+        s += '<circle cx="' + mx + '" cy="' + (my-5) + '" r="3" fill="#e5e7eb"/>';
+        s += '<circle cx="' + mx + '" cy="' + (my+5) + '" r="3" fill="#e5e7eb"/>';
+      } else {
+        s += '<circle cx="' + mx + '" cy="' + my + '" r="3" fill="#e5e7eb"/>';
+      }
+    }
+  }
+
+  // 弦線・弦名
+  for (var i = 0; i < strings; i++) {
+    var y = oy + i * sh;
+    var si = strings-1-i;
+    s += '<line x1="' + ox + '" y1="' + y + '" x2="' + (ox+sw*frets) + '" y2="' + y + '" stroke="#6b7280" stroke-width="' + (.7+si*.3) + '" opacity=".6"/>';
+    s += '<text x="' + (ox-6) + '" y="' + (y+4) + '" text-anchor="end" font-size="9" fill="#8A7F74" font-family="sans-serif">' + stringNames[i] + '</text>';
+  }
+
+  // 各ポジションに構成音を表示
+  for (var i = 0; i < strings; i++) {
+    var si = strings-1-i;
+    var openNote = openTuning[si];
+    var y = oy + i * sh;
+    for (var f = 0; f <= frets; f++) {
+      var note = (openNote + f) % 12;
+      var ni = noteSet.indexOf(note);
+      if (ni < 0) continue;
+      var semi = (note - rootIdx + 12) % 12;
+      var label = labelDef[semi] || '';
+      var color = colorMap[label] || '#6b7280';
+      var cx = f===0 ? ox-18 : ox+(f-.5)*sw;
+      s += '<circle cx="' + cx + '" cy="' + y + '" r="9" fill="' + color + '"/>';
+      s += '<text x="' + cx + '" y="' + (y+3) + '" text-anchor="middle" font-size="8" font-weight="700" fill="#fff" font-family="sans-serif">' + label + '</text>';
+    }
+  }
+
+  // 凡例
+  var legendY = oy + sh*(strings-1) + 18;
+  var legends = [['R','#D32F2F'],['3','#C97D3A'],['b3','#2A6F97'],['5','#6b7280'],['b7/7','#2E7D32'],['9/11/13','#8B4513']];
+  var lx = ox;
+  legends.forEach(function(lg) {
+    s += '<circle cx="' + (lx+5) + '" cy="' + legendY + '" r="5" fill="' + lg[1] + '"/>';
+    s += '<text x="' + (lx+13) + '" y="' + (legendY+4) + '" font-size="9" fill="#6b7280" font-family="sans-serif">' + lg[0] + '</text>';
+    lx += 13 + lg[0].length * 6 + 4;
+  });
+
+  return s + '</svg>';
+}
+
+// ============================================================
+// ベース指板
+// ============================================================
+var currentInst = 'guitar';
+var currentProxyInst = 'guitar';
+var lastProxyShape = null;
+var lastProxyName = null;
+var lastProxyCommon = null;
+var lastProxyRootIdx = null;
+
+// ベース開放弦（低→高: E,A,D,G）セミトーン値
+var BASS_OPEN = [4, 9, 2, 7]; // E=4, A=9, D=2, G=7
+
+// 度数ラベル（半音数→ラベル）
+var INTERVAL_LABELS = {
+  0:'R', 1:'b9', 2:'9', 3:'b3', 4:'3', 5:'11',
+  6:'#11', 7:'5', 8:'b13', 9:'13', 10:'b7', 11:'7',
+  14:'9', 15:'#9', 17:'11', 21:'13'
+};
+
+// 度数ラベルの色
+var INTERVAL_COLORS = {
+  'R':'#D32F2F', '3':'#C97D3A', 'b3':'#2A6F97',
+  '5':'#6b7280', 'b7':'#2E7D32', '7':'#2E7D32',
+  '9':'#8B4513', 'b9':'#8B4513', '#9':'#8B4513',
+  '11':'#6A0DAD', '#11':'#6A0DAD',
+  '13':'#B8860B', 'b13':'#B8860B',
+};
+
+function drawBassNeck(rootNote, intervals, chordName) {
+  var strings = 4;
+  var frets = 12;
+  var sw = 36; // フレット幅
+  var sh = 30; // 弦間隔
+  var ox = 48; // 左余白
+  var oy = 28; // 上余白
+  var W = ox + sw * frets + 24;
+  var H = oy + sh * (strings - 1) + 44;
+
+  var rootIdx = NOTE_TO_IDX[rootNote];
+  // 構成音のセミトーン集合（オクターブ正規化）
+  var noteSet = intervals.map(function(i){ return (rootIdx + i) % 12; });
+
+  var s = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg">';
+
+  // タイトル
+  s += '<text x="' + (W/2) + '" y="16" text-anchor="middle" font-size="13" font-weight="500" fill="#1a1a1a" font-family="sans-serif">' + chordName + ' (Bass)</text>';
+
+  // ナット
+  s += '<line x1="' + ox + '" y1="' + oy + '" x2="' + ox + '" y2="' + (oy + sh*(strings-1)) + '" stroke="#1a1a1a" stroke-width="3"/>';
+
+  // フレット線
+  for (var f = 1; f <= frets; f++) {
+    var x = ox + f * sw;
+    var isMarker = [3,5,7,9,12].indexOf(f) >= 0;
+    s += '<line x1="' + x + '" y1="' + oy + '" x2="' + x + '" y2="' + (oy+sh*(strings-1)) + '" stroke="#6b7280" stroke-width="' + (f===12?1.5:.6) + '" opacity=".5"/>';
+    if (isMarker) {
+      var mx = ox + (f-.5)*sw;
+      var my = oy + sh*(strings-1)/2;
+      if (f === 12) {
+        s += '<circle cx="' + mx + '" cy="' + (my-6) + '" r="3" fill="#e5e7eb"/>';
+        s += '<circle cx="' + mx + '" cy="' + (my+6) + '" r="3" fill="#e5e7eb"/>';
+      } else {
+        s += '<circle cx="' + mx + '" cy="' + my + '" r="3" fill="#e5e7eb"/>';
+      }
+    }
+  }
+
+  // 弦線・弦名
+  var stringNames = ['G','D','A','E'];
+  for (var i = 0; i < strings; i++) {
+    var y = oy + i * sh;
+    var thickness = .8 + i * .5;
+    s += '<line x1="' + ox + '" y1="' + y + '" x2="' + (ox+sw*frets) + '" y2="' + y + '" stroke="#6b7280" stroke-width="' + thickness + '" opacity=".6"/>';
+    s += '<text x="' + (ox-6) + '" y="' + (y+4) + '" text-anchor="end" font-size="9" fill="#8A7F74" font-family="sans-serif">' + stringNames[i] + '</text>';
+  }
+
+  // 各弦の各フレットに構成音を表示
+  for (var i = 0; i < strings; i++) {
+    var openNote = BASS_OPEN[strings - 1 - i]; // G,D,A,E → 上から
+    for (var f = 0; f <= frets; f++) {
+      var note = (openNote + f) % 12;
+      var noteIdx = noteSet.indexOf(note);
+      if (noteIdx < 0) continue;
+
+      var interval = intervals[noteIdx];
+      var label = INTERVAL_LABELS[interval] || '';
+      if (!label) {
+        // セミトーンから直接
+        var semi = (note - rootIdx + 12) % 12;
+        label = INTERVAL_LABELS[semi] || '';
+      }
+      var color = INTERVAL_COLORS[label] || '#6b7280';
+      var isRoot = (note === rootIdx);
+
+      var cx, cy = oy + i * sh;
+      if (f === 0) {
+        cx = ox - 20;
+        s += '<circle cx="' + cx + '" cy="' + cy + '" r="10" fill="' + color + '"/>';
+        s += '<text x="' + cx + '" y="' + (cy+4) + '" text-anchor="middle" font-size="9" fill="white" font-weight="600" font-family="sans-serif">' + label + '</text>';
+      } else {
+        cx = ox + (f - .5) * sw;
+        s += '<circle cx="' + cx + '" cy="' + cy + '" r="10" fill="' + color + '"/>';
+        s += '<text x="' + cx + '" y="' + (cy+4) + '" text-anchor="middle" font-size="9" fill="white" font-weight="600" font-family="sans-serif">' + label + '</text>';
+      }
+    }
+  }
+
+  // 凡例
+  var legendY = oy + sh*(strings-1) + 18;
+  var legends = [['R','#D32F2F'], ['3','#C97D3A'], ['b3','#2A6F97'], ['5','#6b7280'], ['b7/7','#2E7D32'], ['9/11/13','#8B4513']];
+  var lx = ox;
+  legends.forEach(function(lg) {
+    s += '<circle cx="' + (lx+6) + '" cy="' + legendY + '" r="5" fill="' + lg[1] + '"/>';
+    s += '<text x="' + (lx+14) + '" y="' + (legendY+4) + '" font-size="9" fill="#6b7280" font-family="sans-serif">' + lg[0] + '</text>';
+    lx += 14 + lg[0].length * 6 + 4;
+  });
+
+  return s + '</svg>';
+}
+
+function getIntervalsForChord(chordName) {
+  // コード名からルートと構成音を取得
+  var roots = ['C#','Db','D#','Eb','F#','Gb','G#','Ab','A#','Bb','C','D','E','F','G','A','B'];
+  var root = '';
+  for (var i = 0; i < roots.length; i++) {
+    if (chordName.indexOf(roots[i]) === 0) { root = roots[i]; break; }
+  }
+  if (!root) root = chordName[0];
+  var type = chordName.slice(root.length);
+  // 表示用記号を内部キーに正規化
+  type = type.replace(/♯/g,'s').replace(/♭/g,'b').replace(/\//g,'').replace(/・/g,'').replace(/【/g,'').replace(/】/g,'');
+
+  // タイプから構成音を取得
+  var intervalMap = {
+    '': [0,4,7], 'm': [0,3,7], '7': [0,4,7,10], 'M7': [0,4,7,11],
+    'm7': [0,3,7,10], 'dim': [0,3,6], 'dim7': [0,3,6,9], 'm7b5': [0,3,6,10],
+    'aug': [0,4,8], 'sus4': [0,5,7], 'sus2': [0,2,7],
+    '6': [0,4,7,9], 'm6': [0,3,7,9], 'mM7': [0,3,7,11],
+    'add9': [0,4,7,14], '9': [0,4,7,10,14], 'M9': [0,4,7,11,14],
+    'm9': [0,3,7,10,14], '69': [0,4,7,9,14], 'm69': [0,3,7,9,14],
+    '7b9': [0,4,7,10,13], '7s9': [0,4,7,10,15],
+    '11': [0,4,10,14,17], 'M11': [0,4,11,14,17], 'm11': [0,3,10,14,17],
+    '13': [0,4,10,14,21], 'M13': [0,4,11,14,21], 'm13': [0,3,10,14,21],
+    '7s11': [0,4,7,10,6], '9s11': [0,4,7,10,14,6],
+    'm711': [0,3,7,10,17], 'm911': [0,3,7,10,14,17],
+    '713': [0,4,7,10,21], '913': [0,4,7,10,14,21],
+    '7b13': [0,4,7,10,8], '9b13': [0,4,7,10,14,8],
+  };
+  var intervals = intervalMap[type];
+  if (!intervals) {
+    // 部分一致で探す
+    var keys = Object.keys(intervalMap);
+    for (var k=0; k<keys.length; k++) {
+      if (type.indexOf(keys[k])===0 && keys[k].length>0) { intervals=intervalMap[keys[k]]; break; }
+    }
+    if (!intervals) intervals = intervalMap[''];
+  }
+  return { root: root, intervals: intervals };
+}
+
+function setInst(inst) {
+  currentInst = inst;
+  document.getElementById('tab-guitar').classList.toggle('active', inst === 'guitar');
+  document.getElementById('tab-bass').classList.toggle('active', inst === 'bass');
+  document.getElementById('tab-keys').classList.toggle('active', inst === 'keys');
+  renderChord();
+}
+
+function setProxyInst(inst) {
+  currentProxyInst = inst;
+  document.getElementById('proxy-tab-guitar').classList.toggle('active', inst === 'guitar');
+  document.getElementById('proxy-tab-bass').classList.toggle('active', inst === 'bass');
+  document.getElementById('proxy-tab-keys').classList.toggle('active', inst === 'keys');
+  if (lastProxyName) {
+    var info = getIntervalsForChord(lastProxyName);
+    if (inst === 'guitar') {
+      var spBaseInfo=getIntervalsForChord(lastProxyName);
+      var spFiltIvs=applyOmit(spBaseInfo.intervals,proxyOmitFlags);
+      var spInfo={root:spBaseInfo.root,intervals:spFiltIvs};
+      var spForm=lastProxyShape?drawNeck(lastProxyShape,lastProxyName,null,lastProxyCommon,lastProxyRootIdx):'<div style="font-size:12px;color:#6b7280;margin-bottom:.75rem;">フォームデータ未登録</div>';
+      var spLabel='<div class="slabel" style="margin-top:.85rem;">ギター構成音マップ</div>';
+      document.getElementById('proxy-neck-wrap').innerHTML=spForm+spLabel+drawGuitarMap(spInfo.root,spFiltIvs,lastProxyName);
+    } else if (inst === 'bass') {
+      var bsFilt=applyOmit(info.intervals,proxyOmitFlags);
+      document.getElementById('proxy-neck-wrap').innerHTML = drawBassNeck(info.root, bsFilt, lastProxyName);
+    } else {
+      var ksFilt=applyOmit(info.intervals,proxyOmitFlags);
+      document.getElementById('proxy-neck-wrap').innerHTML = drawKeyboard(info.root, ksFilt, lastProxyName);
+    }
+  }
+}
+
+
+// ============================================================
+// 鍵盤表示
+// ============================================================
+function drawKeyboard(rootNote, intervals, chordName) {
+  var rootIdx = NOTE_TO_IDX[rootNote];
+  var labelDef = {0:'R',1:'b9',2:'9',3:'b3',4:'3',5:'11',6:'#11',7:'5',8:'b13',9:'13',10:'b7',11:'7'};
+  var colorMap = {
+    'R':'#D32F2F','3':'#C97D3A','b3':'#2A6F97','5':'#6b7280',
+    'b7':'#2E7D32','7':'#2E7D32','9':'#8B4513','b9':'#8B4513',
+    '#9':'#8B4513','11':'#6A0DAD','#11':'#6A0DAD',
+    '13':'#B8860B','b13':'#B8860B'
+  };
+  var NOTE_FLAT  = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+  var NOTE_SHARP = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+  var FLAT_KEYS  = ['F','Bb','Eb','Ab','Db','Gb'];
+  var useFlat = FLAT_KEYS.indexOf(rootNote) >= 0;
+  function noteName(semi) {
+    return useFlat ? NOTE_FLAT[semi%12] : NOTE_SHARP[semi%12];
+  }
+
+  // C固定・2オクターブ半（C=0〜G#=32、33半音）
+  // 構成音をC起点の絶対位置に配置
+  // ルートのC起点位置 = rootIdx
+  // 各構成音 = rootIdx + interval (オクターブ内に収める)
+
+  var TOTAL_SEMIS = 32; // C(0)〜G#(31) = 32半音 ※最後はG#まで表示
+
+  // 構成音をC起点絶対位置にマッピング
+  var noteMap = {}; // C起点0-31 → label
+  intervals.forEach(function(iv) {
+    var semi = ((iv%12)+12)%12;
+    var label = labelDef[semi] || '';
+    // ルートのC起点位置 + 構成音の相対位置
+    var cPos = rootIdx + semi;
+    if (semi === 0) {
+      cPos = rootIdx;
+    } else if (semi < rootIdx) {
+      // ルートより低い音は1オクターブ上に
+      cPos = rootIdx + semi + 12;
+    }
+    // テンション(9,11,13)は1オクターブ上に
+    if (iv >= 12) cPos += 12;
+    // 範囲内に収める
+    if (cPos >= TOTAL_SEMIS) cPos -= 12;
+    if (cPos < 0) cPos += 12;
+    if (cPos < TOTAL_SEMIS && !noteMap[cPos]) noteMap[cPos] = label;
+  });
+
+  // C固定の白鍵・黒鍵レイアウト
+  // 白鍵: C,D,E,F,G,A,B の7個/オクターブ
+  var IS_WHITE = [true,false,true,false,true,true,false,true,false,true,false,true];
+  var WHITE_NAMES_SHARP = ['C','D','E','F','G','A','B'];
+  var WHITE_NAMES_FLAT  = ['C','D','E','F','G','A','B'];
+  // 黒鍵: C#/Db, D#/Eb, F#/Gb, G#/Ab, A#/Bb
+  var BLACK_LEFT_WHITE = {1:0, 3:1, 6:3, 8:4, 10:5}; // semi%7 → 左の白鍵wi(oct内)
+
+  // 白鍵リストと黒鍵リストを生成（0〜31半音）
+  var whites = [];
+  var blacks = [];
+  var wi = 0;
+  for (var cPos = 0; cPos <= TOTAL_SEMIS; cPos++) {
+    var semi = cPos % 12;
+    var oct = Math.floor(cPos / 12);
+    if (IS_WHITE[semi]) {
+      whites.push({cPos:cPos, wi:wi, semi:semi, oct:oct});
+      wi++;
+    } else if (cPos < TOTAL_SEMIS) {
+      var leftWiInOct = BLACK_LEFT_WHITE[semi];
+      blacks.push({cPos:cPos, semi:semi, oct:oct, leftWi: leftWiInOct + oct*7});
+    }
+  }
+
+  var ww=26, wh=100, bw=16, bh=62, ox=16, oy=22;
+  var W = ox + ww*whites.length + 16;
+  var H = oy + wh + 52;
+
+  var s='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg">';
+  s+='<text x="'+(W/2)+'" y="14" text-anchor="middle" font-size="12" font-weight="500" fill="#1a1a1a" font-family="sans-serif">'+chordName+'</text>';
+
+  // 白鍵描画
+  whites.forEach(function(w) {
+    var isActive = noteMap.hasOwnProperty(w.cPos);
+    var label = isActive ? noteMap[w.cPos] : '';
+    var fill = isActive ? (colorMap[label]||'#4A90D9') : '#fff';
+    var x = ox + w.wi * ww;
+    var isOctBoundary = (w.semi === 0 && w.oct > 0);
+    s+='<rect x="'+x+'" y="'+oy+'" width="'+(ww-2)+'" height="'+wh+'" rx="3" fill="'+fill+'" stroke="'+(isOctBoundary?'#aaa':'#DDD8D0')+'" stroke-width="'+(isOctBoundary?2:1.5)+'"/>';
+    // 音名ラベル（C・F・ルート音のみ表示）
+    var showName = (w.semi===0 || w.semi===5 || w.cPos===rootIdx);
+    if (showName) {
+      s+='<text x="'+(x+ww/2-1)+'" y="'+(oy+wh-18)+'" text-anchor="middle" font-size="8" fill="'+(isActive?'rgba(255,255,255,0.6)':'#ccc')+'" font-family="sans-serif">'+noteName(w.semi)+'</text>';
+    }
+    if (isActive && label) {
+      s+='<text x="'+(x+ww/2-1)+'" y="'+(oy+wh-6)+'" text-anchor="middle" font-size="10" font-weight="700" fill="#fff" font-family="sans-serif">'+label+'</text>';
+    }
+  });
+
+  // 黒鍵描画
+  blacks.forEach(function(b) {
+    var isActive = noteMap.hasOwnProperty(b.cPos);
+    var label = isActive ? noteMap[b.cPos] : '';
+    var fill = isActive ? (colorMap[label]||'#4A90D9') : '#1a1a1a';
+    var x = ox + b.leftWi*ww + ww - bw/2;
+    s+='<rect x="'+x+'" y="'+oy+'" width="'+bw+'" height="'+bh+'" rx="2" fill="'+fill+'" stroke="#000" stroke-width="1"/>';
+    if (isActive && label) {
+      s+='<text x="'+(x+bw/2)+'" y="'+(oy+bh-5)+'" text-anchor="middle" font-size="9" font-weight="700" fill="#fff" font-family="sans-serif">'+label+'</text>';
+    }
+  });
+
+  // 凡例
+  var legendY = oy+wh+18;
+  var legends=[['R','#D32F2F'],['3','#C97D3A'],['b3','#2A6F97'],['5','#6b7280'],['b7/7','#2E7D32'],['9/11/13','#8B4513']];
+  var lx=ox;
+  legends.forEach(function(lg){
+    s+='<rect x="'+lx+'" y="'+(legendY-7)+'" width="10" height="10" rx="2" fill="'+lg[1]+'"/>';
+    s+='<text x="'+(lx+13)+'" y="'+legendY+'" font-size="9" fill="#6b7280" font-family="sans-serif">'+lg[0]+'</text>';
+    lx+=13+lg[0].length*6+8;
+  });
+
+  return s+'</svg>';
+}
+
+
+// ============================================================
+// 省略ボタン
+// ============================================================
+var omitFlags = {R: false, '3': false, '5': false};
+var proxyOmitFlags = {R: false, '3': false, '5': false};
+
+// 省略対象のセミトーン
+var OMIT_SEMITONES = {
+  'R': [0],
+  '3': [3, 4],  // b3, 3
+  '5': [7]      // 完全5度のみ（b5/dim5/aug5/b13/#11は省略しない）
+};
+
+function applyOmit(intervals, flags) {
+  return intervals.filter(function(iv) {
+    var semi = ((iv % 12) + 12) % 12;
+    if (flags['R'] && semi === 0) return false;
+    if (flags['3'] && (semi === 3 || semi === 4)) return false;
+    if (flags['5'] && semi === 7 && iv <= 12) return false; // 完全5度(7半音)のみ、テンション域は除外
+    return true;
+  });
+}
+
+function toggleOmit(type) {
+  omitFlags[type] = !omitFlags[type];
+  var btn = document.getElementById('omit-' + type);
+  if (btn) btn.classList.toggle('active', omitFlags[type]);
+  renderChord();
+}
+
+function toggleProxyOmit(type) {
+  proxyOmitFlags[type] = !proxyOmitFlags[type];
+  var btn = document.getElementById('proxy-omit-' + type);
+  if (btn) btn.classList.toggle('active', proxyOmitFlags[type]);
+  // 代理コード検索の表示を更新
+  if (lastProxyName) {
+    var baseInfo = getIntervalsForChord(lastProxyName);
+    var filteredIvs = applyOmit(baseInfo.intervals, proxyOmitFlags);
+    var info = {root: baseInfo.root, intervals: filteredIvs};
+    if (currentProxyInst === 'bass') {
+      document.getElementById('proxy-neck-wrap').innerHTML = drawBassNeck(info.root, info.intervals, lastProxyName);
+    } else if (currentProxyInst === 'keys') {
+      document.getElementById('proxy-neck-wrap').innerHTML = drawKeyboard(info.root, info.intervals, lastProxyName);
+    } else {
+      var spForm = lastProxyShape ? drawNeck(lastProxyShape, lastProxyName, null, lastProxyCommon, lastProxyRootIdx) : '<div style="font-size:12px;color:#6b7280;margin-bottom:.75rem;">フォームデータ未登録</div>';
+      var spLabel = '<div class="slabel" style="margin-top:.85rem;">ギター構成音マップ</div>';
+      document.getElementById('proxy-neck-wrap').innerHTML = spForm + spLabel + drawGuitarMap(info.root, info.intervals, lastProxyName);
+    }
+  }
+}
+
+
+// ============================================================
+// スケール機能
+// ============================================================
+var SCALES = {
+  'major':         {name:'メジャー（アイオニアン）', intervals:[0,2,4,5,7,9,11], desc:'最も基本的な長音階。明るく安定した響き。'},
+  'mixolydian':    {name:'ミクソリディアン',         intervals:[0,2,4,5,7,9,10], desc:'メジャーの7度が♭。ブルースやロックで多用。'},
+  'lydian':        {name:'リディアン',               intervals:[0,2,4,6,7,9,11], desc:'4度が♯。浮遊感・幻想的な響き。'},
+  'lydian-dom':    {name:'リディアン♭7',             intervals:[0,2,4,6,7,9,10], desc:'リディアン+ミクソリディアン。オルタードドミナントに。'},
+  'natural-minor': {name:'ナチュラルマイナー',       intervals:[0,2,3,5,7,8,10], desc:'最も基本的な短音階。暗く哀愁ある響き。'},
+  'dorian':        {name:'ドリアン',                 intervals:[0,2,3,5,7,9,10], desc:'マイナーの6度が♮。ジャズ・ファンクで多用。'},
+  'phrygian':      {name:'フリジアン',               intervals:[0,1,3,5,7,8,10], desc:'2度が♭。スパニッシュ・フラメンコ的。'},
+  'harmonic-minor':{name:'ハーモニックマイナー',     intervals:[0,2,3,5,7,8,11], desc:'7度が♮。クラシック・エキゾチックな響き。'},
+  'melodic-minor': {name:'メロディックマイナー',     intervals:[0,2,3,5,7,9,11], desc:'ジャズマイナー。モーダルジャズで多用。'},
+  'major-penta':   {name:'メジャーペンタトニック',   intervals:[0,2,4,7,9],       desc:'5音。明るくポップ。ギターソロの定番。'},
+  'minor-penta':   {name:'マイナーペンタトニック',   intervals:[0,3,5,7,10],      desc:'5音。ブルース・ロックの基本。'},
+  'blues':         {name:'ブルーススケール',         intervals:[0,3,5,6,7,10],    desc:'マイナーペンタ+♭5。ブルース特有の泥臭さ。'},
+  'diminished-hw': {name:'ディミニッシュ（HW）',     intervals:[0,1,3,4,6,7,9,10],desc:'半音→全音の繰り返し。ディミニッシュコードに。'},
+  'altered':       {name:'オルタード',               intervals:[0,1,3,4,6,8,10],  desc:'スーパーロクリアン。V7altコードに。'},
+  'whole-tone':    {name:'ホールトーン',             intervals:[0,2,4,6,8,10],    desc:'全音のみ。浮遊感・無重力感。'},
+  'chromatic':     {name:'クロマチック',             intervals:[0,1,2,3,4,5,6,7,8,9,10,11], desc:'12音すべて。経過音・アプローチに。'},
+  'enka':          {name:'演歌スケール（陽音階）',   intervals:[0,2,3,7,8],       desc:'ナチュラルマイナーから4度・7度を抜いた5音音階（ラ・シ・ド・ミ・ファ）。演歌・民謡特有の哀愁。'},
+  'okinawa':       {name:'沖縄スケール（琉球音階）', intervals:[0,4,5,7,11],      desc:'沖縄民謡の音階。独特の明るさと哀愁。'},
+  'india':         {name:'インドスケール（バイラヴィ）', intervals:[0,1,4,5,7,8,11], desc:'北インド古典音楽のラーガ。C-D♭-E-F-G-A♭-B-C。神秘的で深い響き。'},
+  'egypt':         {name:'エジプトスケール',         intervals:[0,2,5,7,10],      desc:'C-D-F-G-B♭の5音音階。古代エジプト起源とされる。砂漠的・神秘的な雰囲気。'}
+};
+
+var selScaleKey = 'C';
+var selScaleName = 'major';
+var currentScaleInst = 'guitar';
+
+function initScaleKeys() {
+  var el = document.getElementById('scale-key-row');
+  if (!el) return;
+  ALL_KEYS.forEach(function(k) {
+    var b = document.createElement('button');
+    b.className = 'pill' + (k === selScaleKey ? ' active' : '');
+    b.textContent = k;
+    b.onclick = function() {
+      selScaleKey = k;
+      document.querySelectorAll('#scale-key-row .pill').forEach(function(x){x.classList.remove('active');});
+      b.classList.add('active');
+      renderScale();
+    };
+    el.appendChild(b);
+  });
+}
+
+function setScaleInst(inst) {
+  currentScaleInst = inst;
+  document.getElementById('scale-tab-guitar').classList.toggle('active', inst==='guitar');
+  document.getElementById('scale-tab-bass').classList.toggle('active', inst==='bass');
+  document.getElementById('scale-tab-keys').classList.toggle('active', inst==='keys');
+  renderScale();
+}
+
+function drawScaleGuitar(rootNote, intervals, scaleName) {
+  var rootIdx = NOTE_TO_IDX[rootNote];
+  var noteSet = intervals.map(function(iv){return (rootIdx+iv)%12;});
+  var strings=6, frets=12, sw=36, sh=26, ox=44, oy=20;
+  var H=oy+sh*(strings-1)+38, W=ox+sw*frets+24;
+  var openTuning=[4,9,2,7,11,4];
+  var stringNames=['E','B','G','D','A','E'];
+  var s='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg">';
+  s+='<line x1="'+ox+'" y1="'+oy+'" x2="'+ox+'" y2="'+(oy+sh*(strings-1))+'" stroke="#1a1a1a" stroke-width="3"/>';
+  for(var f=1;f<=frets;f++){var x=ox+f*sw;var isM=[3,5,7,9,12].indexOf(f)>=0;s+='<line x1="'+x+'" y1="'+oy+'" x2="'+x+'" y2="'+(oy+sh*(strings-1))+'" stroke="#6b7280" stroke-width="'+(f===12?1.5:.6)+'" opacity=".5"/>';if(isM){var mx=ox+(f-.5)*sw,my=oy+sh*(strings-1)/2;if(f===12){s+='<circle cx="'+mx+'" cy="'+(my-5)+'" r="3" fill="#e5e7eb"/><circle cx="'+mx+'" cy="'+(my+5)+'" r="3" fill="#e5e7eb"/>';}else{s+='<circle cx="'+mx+'" cy="'+my+'" r="3" fill="#e5e7eb"/>';}}}
+  for(var i=0;i<strings;i++){var y=oy+i*sh,si=strings-1-i;s+='<line x1="'+ox+'" y1="'+y+'" x2="'+(ox+sw*frets)+'" y2="'+y+'" stroke="#6b7280" stroke-width="'+(.7+si*.3)+'" opacity=".6"/>';s+='<text x="'+(ox-6)+'" y="'+(y+4)+'" text-anchor="end" font-size="9" fill="#8A7F74" font-family="sans-serif">'+stringNames[i]+'</text>';}
+  for(var i=0;i<strings;i++){var si=strings-1-i,openNote=openTuning[si],y=oy+i*sh;for(var f=0;f<=frets;f++){var note=(openNote+f)%12,ni=noteSet.indexOf(note);if(ni<0)continue;var isRoot=note===rootIdx;var cx=f===0?ox-18:ox+(f-.5)*sw;s+='<circle cx="'+cx+'" cy="'+y+'" r="9" fill="'+(isRoot?'#D32F2F':'#2A6F97')+'"/>';}}
+  var legendY=oy+sh*(strings-1)+18;
+  s+='<circle cx="'+(ox+5)+'" cy="'+legendY+'" r="5" fill="#D32F2F"/><text x="'+(ox+13)+'" y="'+(legendY+4)+'" font-size="9" fill="#6b7280" font-family="sans-serif">ルート</text>';
+  s+='<circle cx="'+(ox+55)+'" cy="'+legendY+'" r="5" fill="#2A6F97"/><text x="'+(ox+63)+'" y="'+(legendY+4)+'" font-size="9" fill="#6b7280" font-family="sans-serif">スケール音</text>';
+  return s+'</svg>';
+}
+
+function drawScaleBass(rootNote, intervals, scaleName) {
+  var rootIdx = NOTE_TO_IDX[rootNote];
+  var noteSet = intervals.map(function(iv){return (rootIdx+iv)%12;});
+  var strings=4, frets=12, sw=36, sh=30, ox=48, oy=20;
+  var H=oy+sh*(strings-1)+42, W=ox+sw*frets+32;
+  var openTuning=[4,9,2,7];
+  var stringNames=['G','D','A','E'];
+  var s='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg">';
+  s+='<line x1="'+ox+'" y1="'+oy+'" x2="'+ox+'" y2="'+(oy+sh*(strings-1))+'" stroke="#1a1a1a" stroke-width="3"/>';
+  for(var f=1;f<=frets;f++){var x=ox+f*sw;var isM=[3,5,7,9,12].indexOf(f)>=0;s+='<line x1="'+x+'" y1="'+oy+'" x2="'+x+'" y2="'+(oy+sh*(strings-1))+'" stroke="#6b7280" stroke-width="'+(f===12?1.5:.6)+'" opacity=".5"/>';if(isM){var mx=ox+(f-.5)*sw,my=oy+sh*(strings-1)/2;if(f===12){s+='<circle cx="'+mx+'" cy="'+(my-6)+'" r="3" fill="#e5e7eb"/><circle cx="'+mx+'" cy="'+(my+6)+'" r="3" fill="#e5e7eb"/>';}else{s+='<circle cx="'+mx+'" cy="'+my+'" r="3" fill="#e5e7eb"/>';}}}
+  for(var i=0;i<strings;i++){var y=oy+i*sh,si=strings-1-i;s+='<line x1="'+ox+'" y1="'+y+'" x2="'+(ox+sw*frets)+'" y2="'+y+'" stroke="#6b7280" stroke-width="'+(.8+si*.5)+'" opacity=".6"/>';s+='<text x="'+(ox-6)+'" y="'+(y+4)+'" text-anchor="end" font-size="9" fill="#8A7F74" font-family="sans-serif">'+stringNames[i]+'</text>';}
+  for(var i=0;i<strings;i++){var si=strings-1-i,openNote=openTuning[si],y=oy+i*sh;for(var f=0;f<=frets;f++){var note=(openNote+f)%12,ni=noteSet.indexOf(note);if(ni<0)continue;var isRoot=note===rootIdx;var cx=f===0?ox-20:ox+(f-.5)*sw;s+='<circle cx="'+cx+'" cy="'+y+'" r="10" fill="'+(isRoot?'#D32F2F':'#2A6F97')+'"/>';}}
+  var legendY=oy+sh*(strings-1)+18;
+  s+='<circle cx="'+ox+'" cy="'+legendY+'" r="5" fill="#D32F2F"/><text x="'+(ox+8)+'" y="'+(legendY+4)+'" font-size="9" fill="#6b7280" font-family="sans-serif">ルート</text>';
+  s+='<circle cx="'+(ox+55)+'" cy="'+legendY+'" r="5" fill="#2A6F97"/><text x="'+(ox+63)+'" y="'+(legendY+4)+'" font-size="9" fill="#6b7280" font-family="sans-serif">スケール音</text>';
+  return s+'</svg>';
+}
+
+function drawScaleKeys(rootNote, intervals) {
+  var rootIdx = NOTE_TO_IDX[rootNote];
+  var noteSet = intervals.map(function(iv){return (rootIdx+iv)%12;});
+  var FLAT_KEYS=['F','Bb','Eb','Ab','Db','Gb'];
+  var NOTE_FLAT=['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+  var NOTE_SHARP=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+  var useFlat=FLAT_KEYS.indexOf(rootNote)>=0;
+  var IS_WHITE=[true,false,true,false,true,true,false,true,false,true,false,true];
+  var BLACK_LEFT=[null,0,null,1,null,null,3,null,4,null,5,null];
+  var TOTAL=32;
+  var whites=[],blacks=[],wi=0;
+  for(var p=0;p<=TOTAL;p++){var sm=p%12,oct=Math.floor(p/12);if(IS_WHITE[sm]){whites.push({p:p,wi:wi,sm:sm,oct:oct});wi++;}else if(p<TOTAL){blacks.push({p:p,sm:sm,oct:oct,lw:BLACK_LEFT[sm]+oct*7});}}
+  var ww=26,wh=90,bw=16,bh=56,ox=16,oy=22,W=ox+ww*whites.length+16,H=oy+wh+42;
+  var s='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg">';
+  whites.forEach(function(w){
+    var abs=w.sm,isActive=noteSet.indexOf(abs)>=0,isRoot=abs===rootIdx;
+    var fill=isRoot?'#D32F2F':isActive?'#2A6F97':'#fff';
+    var x=ox+w.wi*ww,isOct=(w.sm===0&&w.oct>0);
+    s+='<rect x="'+x+'" y="'+oy+'" width="'+(ww-2)+'" height="'+wh+'" rx="3" fill="'+fill+'" stroke="'+(isOct?'#aaa':'#DDD8D0')+'" stroke-width="'+(isOct?2:1.5)+'"/>';
+    if(w.sm===0||w.sm===5||(isRoot&&IS_WHITE[rootIdx])){var nm=useFlat?NOTE_FLAT[w.sm]:NOTE_SHARP[w.sm];s+='<text x="'+(x+ww/2-1)+'" y="'+(oy+wh-6)+'" text-anchor="middle" font-size="8" fill="'+(isActive?'rgba(255,255,255,0.8)':'#ccc')+'" font-family="sans-serif">'+nm+'</text>';}
+  });
+  blacks.forEach(function(b){
+    var abs=b.sm,isActive=noteSet.indexOf(abs)>=0,isRoot=abs===rootIdx;
+    var fill=isRoot?'#D32F2F':isActive?'#2A6F97':'#1a1a1a';
+    var x=ox+b.lw*ww+ww-bw/2;
+    s+='<rect x="'+x+'" y="'+oy+'" width="'+bw+'" height="'+bh+'" rx="2" fill="'+fill+'" stroke="#000" stroke-width="1"/>';
+  });
+  var legendY=oy+wh+16;
+  s+='<rect x="'+ox+'" y="'+(legendY-7)+'" width="10" height="10" rx="2" fill="#D32F2F"/><text x="'+(ox+13)+'" y="'+legendY+'" font-size="9" fill="#6b7280" font-family="sans-serif">ルート</text>';
+  s+='<rect x="'+(ox+55)+'" y="'+(legendY-7)+'" width="10" height="10" rx="2" fill="#2A6F97"/><text x="'+(ox+68)+'" y="'+legendY+'" font-size="9" fill="#6b7280" font-family="sans-serif">スケール音</text>';
+  return s+'</svg>';
+}
+
+function renderScale() {
+  var scale = SCALES[selScaleName];
+  if (!scale) return;
+  var titleEl = document.getElementById('scale-title-area');
+  if (titleEl) {
+    titleEl.innerHTML = '<div class="info-bar"><strong>'+selScaleKey+'キー / '+scale.name+'</strong><br><span style="font-size:11.5px;">'+scale.desc+'</span><br><span style="font-size:10px;opacity:.6;">構成音: '+scale.intervals.map(function(iv){var idx=(NOTE_TO_IDX[selScaleKey]+iv)%12;var FLAT=['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'],SH=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'],FK=['F','Bb','Eb','Ab','Db','Gb'];return FK.indexOf(selScaleKey)>=0?FLAT[idx]:SH[idx];}).join(' - ')+'</span></div>';
+  }
+  var wrap = document.getElementById('scale-neck-wrap');
+  if (!wrap) return;
+  if (currentScaleInst==='guitar') {
+    wrap.innerHTML = drawScaleGuitar(selScaleKey, scale.intervals, scale.name);
+  } else if (currentScaleInst==='bass') {
+    wrap.innerHTML = drawScaleBass(selScaleKey, scale.intervals, scale.name);
+  } else {
+    wrap.innerHTML = drawScaleKeys(selScaleKey, scale.intervals);
+  }
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+  document.getElementById('btn-chord').addEventListener('click',function(){
+    var sub=document.getElementById('sub-chord'),isOpen=sub.classList.contains('open');
+    document.querySelectorAll('.sub-menu').forEach(function(s){s.classList.remove('open');});
+    if(!isOpen)sub.classList.add('open');
+  });
+  document.getElementById('btn-scale').addEventListener('click',function(){
+    var sub=document.getElementById('sub-scale'),isOpen=sub.classList.contains('open');
+    document.querySelectorAll('.sub-menu').forEach(function(s){s.classList.remove('open');});
+    if(!isOpen)sub.classList.add('open');
+  });
+  document.getElementById('btn-notation').addEventListener('click',function(){
+    var sub=document.getElementById('sub-notation'),isOpen=sub.classList.contains('open');
+    document.querySelectorAll('.sub-menu').forEach(function(s){s.classList.remove('open');});
+    if(!isOpen)sub.classList.add('open');
+  });
+  document.getElementById('btn-proxy').addEventListener('click',function(){
+    var sub=document.getElementById('sub-proxy'),isOpen=sub.classList.contains('open');
+    document.querySelectorAll('.sub-menu').forEach(function(s){s.classList.remove('open');});
+    if(!isOpen)sub.classList.add('open');
+  });
+  document.querySelectorAll('.menu-item').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      document.querySelectorAll('.menu-item').forEach(function(x){x.classList.remove('active');});
+      btn.classList.add('active');
+      var scr=btn.dataset.screen;
+      if(scr==='chord'){selPattern=btn.dataset.pattern;selChordIdx=0;selVar=1;showScreen('chord');renderChord();}
+      else if(scr==='notation'){showScreen('notation');renderNotation(btn.dataset.notation);}
+      else if(scr==='proxy-search'){showScreen('proxy-search');}
+      else if(scr==='proxy-guide'){showScreen('proxy-guide');document.getElementById('proxy-guide-content').innerHTML=buildGuide();}
+      else if(scr==='scale'){selScaleName=btn.dataset.scale;showScreen('scale');renderScale();}
+    });
+  });
+  document.getElementById('search-btn').addEventListener('click',doSearch);
+  document.getElementById('home-btn').addEventListener('click',function(){
+    document.querySelectorAll('.menu-item').forEach(function(x){x.classList.remove('active');});
+    document.querySelectorAll('.sub-menu').forEach(function(s){s.classList.remove('open');});
+    showScreen('welcome');
+  });
+  document.getElementById('btn-about').addEventListener('click',function(){
+    showScreen('about');
+  });
+  initKeys();
+  initScaleKeys();
+  initProxyRoots();
+  initProxyTypes();
+  showScreen('welcome');
+});
+</script>
+</body>
+</html>
