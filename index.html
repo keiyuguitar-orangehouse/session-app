@@ -113,6 +113,12 @@ body{font-family:system-ui,-apple-system,'Hiragino Sans',sans-serif;background:#
 .omit-btn{padding:4px 12px;border-radius:20px;border:1.5px solid #DDD8D0;background:#F5F2EB;color:#4A3F35;font-size:11px;font-weight:500;cursor:pointer;}
 .omit-btn:hover{background:#E8E3DC;}
 .omit-btn.active{background:#C97D3A;color:#fff;border-color:#C97D3A;}
+
+.play-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:20px;border:1.5px solid #1a1a1a;background:#1a1a1a;color:#fff;font-size:12px;font-weight:500;cursor:pointer;margin-top:.5rem;transition:all .15s;}
+.play-btn:hover{background:#C97D3A;border-color:#C97D3A;}
+.play-btn.playing{background:#D32F2F;border-color:#D32F2F;}
+.scale-play-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:20px;border:1.5px solid #2A6F97;background:#2A6F97;color:#fff;font-size:12px;font-weight:500;cursor:pointer;margin-top:.5rem;transition:all .15s;}
+.scale-play-btn:hover{background:#1a5276;border-color:#1a5276;}
 </style>
 </head>
 <body>
@@ -272,6 +278,9 @@ body{font-family:system-ui,-apple-system,'Hiragino Sans',sans-serif;background:#
     <div class="slabel">コード進行</div>
     <div class="chord-seq" id="chord-seq"></div>
     <div class="info-bar" id="info-bar"></div>
+    <div style="margin-bottom:.75rem;">
+      <button class="play-btn" id="chord-play-btn" onclick="playCurrentChord()">&#9654; コードを鳴らす</button>
+    </div>
     <div class="inst-tab-row">
       <button class="inst-tab active" id="tab-guitar" onclick="setInst('guitar')">🎸 ギター</button>
       <button class="inst-tab" id="tab-bass" onclick="setInst('bass')">🎸 ベース</button>
@@ -310,6 +319,9 @@ body{font-family:system-ui,-apple-system,'Hiragino Sans',sans-serif;background:#
         <button class="omit-btn" id="proxy-omit-R" onclick="toggleProxyOmit('R')">ルート</button>
         <button class="omit-btn" id="proxy-omit-3" onclick="toggleProxyOmit('3')">3度</button>
       </div>
+      <div style="margin-bottom:.5rem;">
+        <button class="play-btn" id="proxy-play-btn" onclick="playProxyChord()">&#9654; このコードを鳴らす</button>
+      </div>
     </div>
     <div class="neck-wrap" id="proxy-neck-wrap"></div>
   </div>
@@ -317,6 +329,10 @@ body{font-family:system-ui,-apple-system,'Hiragino Sans',sans-serif;background:#
     <div class="slabel">キー</div>
     <div class="key-row" id="scale-key-row"></div>
     <div id="scale-title-area"></div>
+    <div style="margin-bottom:.5rem;">
+      <button class="scale-play-btn" id="scale-play-btn" onclick="playScale()">&#9654; スケールを鳴らす</button>
+      <button class="scale-play-btn" id="scale-play-desc-btn" onclick="playScale(true)" style="background:#6b7280;border-color:#6b7280;margin-left:6px;">&#9660; 下降で鳴らす</button>
+    </div>
     <div class="inst-tab-row">
       <button class="inst-tab active" id="scale-tab-guitar" onclick="setScaleInst('guitar')">&#127928; ギター</button>
       <button class="inst-tab" id="scale-tab-bass" onclick="setScaleInst('bass')">&#127928; ベース</button>
@@ -560,6 +576,7 @@ function buildGuide(){
 }
 var ALL_KEYS=['C','G','D','A','E','B','F','Bb','Eb','Ab','Db','Gb'];
 var selKey='C',selPattern='251',selChordIdx=0,selVar=1;
+var seq=[];
 function showScreen(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.getElementById('screen-'+id).classList.add('active');}
 function getSeq(){
   var p=PATTERNS[selPattern];
@@ -571,7 +588,7 @@ function renderChord(){
   var tabArea=document.getElementById('tab-area');
   if(isEnding){tabArea.innerHTML='<div class="slabel">バリエーション</div><div class="tab-row"><button class="tab-btn '+(selVar===1?'active':'')+'" onclick="selVar=1;selChordIdx=0;renderChord()">Var.1 ターンアラウンド</button><button class="tab-btn '+(selVar===2?'active':'')+'" onclick="selVar=2;selChordIdx=0;renderChord()">Var.2 クロマチック</button></div>';}
   else{tabArea.innerHTML='';}
-  var seq=getSeq(),labels=isEnding?null:(DEGREE_LABELS[selPattern]||[]);
+  seq=getSeq(),labels=isEnding?null:(DEGREE_LABELS[selPattern]||[]);
   var what='',desc='',session='';
   if(isEnding){var v=selVar===1?BLUES_ENDING_VAR1:BLUES_ENDING_VAR2;what=v.what;desc=v.desc;session=v.session;}
   else{what=PATTERN_WHAT[selPattern]||'';desc=p.desc;session=p.session;}
@@ -1219,6 +1236,156 @@ function renderScale() {
   } else {
     wrap.innerHTML = drawScaleKeys(selScaleKey, scale.intervals);
   }
+}
+
+
+// ============================================================
+// Web Audio API 音声再生
+// ============================================================
+var audioCtx = null;
+var isPlayingChord = false;
+var isPlayingScale = false;
+var scaleTimeouts = [];
+
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+// 単音を鳴らす（周波数・開始時間・長さ・音量）
+function playTone(freq, startTime, duration, volume, waveType) {
+  var ctx = getAudioCtx();
+  var osc = ctx.createOscillator();
+  var gain = ctx.createGain();
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.type = waveType || 'triangle';
+  osc.frequency.setValueAtTime(freq, startTime);
+  // エンベロープ（アタック・リリース）
+  var attack = 0.02;
+  var release = 0.15;
+  gain.gain.setValueAtTime(0, startTime);
+  gain.gain.linearRampToValueAtTime(volume || 0.3, startTime + attack);
+  gain.gain.setValueAtTime(volume || 0.3, startTime + duration - release);
+  gain.gain.linearRampToValueAtTime(0, startTime + duration);
+  osc.start(startTime);
+  osc.stop(startTime + duration);
+}
+
+// 音名→周波数（A4=440Hz基準）
+function noteToFreq(noteNum) {
+  // noteNum: MIDIノート番号 (C4=60)
+  return 440 * Math.pow(2, (noteNum - 69) / 12);
+}
+
+// コードの構成音をMIDIノート番号に変換
+function intervalsToMidi(rootNote, intervals, baseOctave) {
+  var rootIdx = NOTE_TO_IDX[rootNote];
+  var base = baseOctave || 4; // C4=60
+  var rootMidi = 60 + rootIdx + (base - 4) * 12;
+  // ルートがC4以下になる場合は1オクターブ上げる
+  if (rootMidi < 48) rootMidi += 12;
+  return intervals.map(function(iv) {
+    return rootMidi + iv;
+  });
+}
+
+// 共通音検索のコードを鳴らす
+function playProxyChord() {
+  var btn = document.getElementById('proxy-play-btn');
+  if (!lastProxyName) return;
+  var info = getIntervalsForChord(lastProxyName);
+  if (!info || !info.intervals.length) return;
+  var filteredIvs = applyOmit(info.intervals, proxyOmitFlags);
+  if (!filteredIvs.length) filteredIvs = info.intervals;
+  var midis = intervalsToMidi(info.root, filteredIvs, 4);
+  var ctx = getAudioCtx();
+  var now = ctx.currentTime;
+  var duration = 1.8;
+  midis.forEach(function(midi) {
+    playTone(noteToFreq(midi), now, duration, 0.25, 'triangle');
+  });
+  if (btn) { btn.classList.add('playing'); btn.textContent = '♪ 再生中...'; }
+  setTimeout(function() {
+    if (btn) { btn.classList.remove('playing'); btn.innerHTML = '&#9654; このコードを鳴らす'; }
+  }, duration * 1000);
+}
+
+// コードを鳴らす
+function playCurrentChord() {
+  var btn = document.getElementById('chord-play-btn');
+  if (isPlayingChord) return;
+  var ch = seq ? seq[selChordIdx] : null;
+  if (!ch) return;
+  var info = getIntervalsForChord(ch.name);
+  if (!info || !info.intervals.length) return;
+  var filteredIvs = applyOmit(info.intervals, omitFlags);
+  if (!filteredIvs.length) filteredIvs = info.intervals;
+  var midis = intervalsToMidi(info.root, filteredIvs, 4);
+  var ctx = getAudioCtx();
+  var now = ctx.currentTime;
+  var duration = 1.8;
+  midis.forEach(function(midi) {
+    playTone(noteToFreq(midi), now, duration, 0.25, 'triangle');
+  });
+  isPlayingChord = true;
+  if (btn) { btn.classList.add('playing'); btn.textContent = '♪ 再生中...'; }
+  setTimeout(function() {
+    isPlayingChord = false;
+    if (btn) { btn.classList.remove('playing'); btn.innerHTML = '&#9654; コードを鳴らす'; }
+  }, duration * 1000);
+}
+
+// スケールを鳴らす
+function playScale(descending) {
+  if (isPlayingScale) {
+    scaleTimeouts.forEach(function(t){ clearTimeout(t); });
+    scaleTimeouts = [];
+    isPlayingScale = false;
+    var btn = document.getElementById('scale-play-btn');
+    var btn2 = document.getElementById('scale-play-desc-btn');
+    if (btn) btn.innerHTML = '&#9654; スケールを鳴らす';
+    if (btn2) btn2.innerHTML = '&#9660; 下降で鳴らす';
+    return;
+  }
+  var scale = SCALES[selScaleName];
+  if (!scale) return;
+  var ivs = scale.intervals.slice();
+  var midis;
+  if (descending) {
+    // 上昇のMIDIを作り、1オクターブ上のルートから逆順に下降
+    var ascMidis = intervalsToMidi(selScaleKey, ivs, 4);
+    var topMidi = ascMidis[0] + 12; // ルートの1オクターブ上
+    // 上昇音列を逆にして最高音（ルート）から下降
+    var descMidis = [topMidi];
+    for (var i = ascMidis.length - 1; i >= 0; i--) {
+      descMidis.push(ascMidis[i]);
+    }
+    midis = descMidis;
+  } else {
+    midis = intervalsToMidi(selScaleKey, ivs, 4);
+    // 上昇の最後にルートをもう一度（1オクターブ上）
+    midis = midis.concat([midis[0] + 12]);
+  }
+  var noteLen = 0.35;
+  var ctx = getAudioCtx();
+  var now = ctx.currentTime;
+  midis.forEach(function(midi, i) {
+    var dur = (i === midis.length - 1) ? noteLen * 1.5 : noteLen * 0.9;
+    playTone(noteToFreq(midi), now + i * noteLen, dur, 0.3, 'triangle');
+  });
+  isPlayingScale = true;
+  var totalMs = (midis.length + 0.5) * noteLen * 1000;
+  var btn = document.getElementById('scale-play-btn');
+  var btn2 = document.getElementById('scale-play-desc-btn');
+  if (!descending && btn) btn.innerHTML = '&#9646;&#9646; 停止';
+  if (descending && btn2) btn2.innerHTML = '&#9646;&#9646; 停止';
+  var t = setTimeout(function() {
+    isPlayingScale = false;
+    if (btn) btn.innerHTML = '&#9654; スケールを鳴らす';
+    if (btn2) btn2.innerHTML = '&#9660; 下降で鳴らす';
+  }, totalMs);
+  scaleTimeouts.push(t);
 }
 
 document.addEventListener('DOMContentLoaded',function(){
